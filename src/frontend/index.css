@@ -1,0 +1,427 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Figtree:wght@300..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0.11 0.05 280;
+    --foreground: 0.95 0.02 285;
+    --card: 0.16 0.05 280;
+    --card-foreground: 0.95 0.02 285;
+    --popover: 0.14 0.05 280;
+    --popover-foreground: 0.95 0.02 285;
+    --primary: 0.72 0.25 340;
+    --primary-foreground: 0.99 0 0;
+    --secondary: 0.28 0.08 285;
+    --secondary-foreground: 0.90 0.04 285;
+    --muted: 0.20 0.05 280;
+    --muted-foreground: 0.62 0.05 285;
+    --accent: 0.76 0.18 180;
+    --accent-foreground: 0.12 0.04 180;
+    --destructive: 0.60 0.22 20;
+    --destructive-foreground: 0.99 0 0;
+    --border: 0.28 0.07 280;
+    --input: 0.22 0.06 280;
+    --ring: 0.72 0.25 340;
+    --radius: 1rem;
+    --chart-1: 0.72 0.25 340;
+    --chart-2: 0.76 0.18 180;
+    --chart-3: 0.82 0.20 75;
+    --chart-4: 0.70 0.18 260;
+    --chart-5: 0.65 0.22 20;
+    --sidebar: 0.14 0.05 280;
+    --sidebar-foreground: 0.95 0.02 285;
+    --sidebar-primary: 0.72 0.25 340;
+    --sidebar-primary-foreground: 0.99 0 0;
+    --sidebar-accent: 0.20 0.06 280;
+    --sidebar-accent-foreground: 0.90 0.04 285;
+    --sidebar-border: 0.28 0.07 280;
+    --sidebar-ring: 0.72 0.25 340;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Figtree', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+  }
+}
+
+/* =============================================
+   BACKGROUND SHIMMER ANIMATION
+   ============================================= */
+@keyframes bg-shimmer {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.88; }
+}
+
+/* Candy Cosmos background mesh */
+.candy-bg {
+  background:
+    radial-gradient(ellipse at 20% 15%, oklch(0.32 0.18 320 / 0.55) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 80%, oklch(0.24 0.14 200 / 0.40) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 50%, oklch(0.20 0.10 340 / 0.30) 0%, transparent 55%),
+    radial-gradient(ellipse at 10% 85%, oklch(0.28 0.16 300 / 0.35) 0%, transparent 40%),
+    radial-gradient(ellipse at 90% 10%, oklch(0.22 0.12 355 / 0.30) 0%, transparent 40%),
+    oklch(0.11 0.05 280);
+  animation: bg-shimmer 8s ease-in-out infinite;
+}
+
+/* Mystic Jungle background mesh */
+.jungle-bg {
+  background:
+    radial-gradient(ellipse at 20% 20%, oklch(0.28 0.16 150 / 0.60) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 75%, oklch(0.22 0.14 140 / 0.50) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 10%, oklch(0.32 0.18 148 / 0.30) 0%, transparent 50%),
+    radial-gradient(ellipse at 15% 70%, oklch(0.18 0.10 160 / 0.35) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 30%, oklch(0.24 0.14 135 / 0.25) 0%, transparent 40%),
+    oklch(0.09 0.06 155);
+  animation: bg-shimmer 8s ease-in-out infinite;
+}
+
+/* Crystal Storm background mesh — icy blue/teal */
+.crystal-bg {
+  background:
+    radial-gradient(ellipse at 15% 20%, oklch(0.36 0.20 215 / 0.60) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 75%, oklch(0.26 0.16 225 / 0.50) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 5%,  oklch(0.40 0.22 210 / 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 10% 80%, oklch(0.22 0.14 235 / 0.30) 0%, transparent 40%),
+    radial-gradient(ellipse at 90% 20%, oklch(0.30 0.18 205 / 0.25) 0%, transparent 40%),
+    oklch(0.09 0.07 220);
+  animation: bg-shimmer 8s ease-in-out infinite;
+}
+
+/* Solar Inferno background mesh — dark red/orange fire */
+.inferno-bg {
+  background:
+    radial-gradient(ellipse at 20% 30%, oklch(0.36 0.22 25 / 0.65) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 70%, oklch(0.28 0.18 15 / 0.55) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 5%,  oklch(0.44 0.24 30 / 0.40) 0%, transparent 50%),
+    radial-gradient(ellipse at 10% 80%, oklch(0.24 0.16 10 / 0.35) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 15%, oklch(0.32 0.20 35 / 0.30) 0%, transparent 40%),
+    oklch(0.09 0.07 18);
+  animation: bg-shimmer 8s ease-in-out infinite;
+}
+
+/* =============================================
+   CELL FACE-DOWN — DEFAULT (fallback)
+   ============================================= */
+.cell-face-down {
+  background: linear-gradient(135deg,
+    oklch(0.28 0.12 290) 0%,
+    oklch(0.22 0.10 300) 50%,
+    oklch(0.26 0.14 280) 100%);
+  border: 1.5px solid oklch(0.38 0.12 290);
+  box-shadow: 0 2px 8px oklch(0.08 0.05 280 / 0.8), inset 0 1px 0 oklch(0.45 0.14 290 / 0.4);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  animation: cell-breathe 3s ease-in-out infinite;
+}
+.cell-face-down:active {
+  transform: scale(0.94);
+}
+
+/* =============================================
+   CELL FACE-DOWN — CANDY COSMOS (pink/magenta)
+   ============================================= */
+.cell-face-down-candy {
+  background: linear-gradient(135deg,
+    oklch(0.30 0.20 330) 0%,
+    oklch(0.22 0.18 320) 40%,
+    oklch(0.28 0.22 340) 100%);
+  border: 1.5px solid oklch(0.48 0.24 335);
+  box-shadow:
+    0 2px 8px oklch(0.08 0.06 330 / 0.9),
+    inset 0 1px 0 oklch(0.55 0.22 340 / 0.45),
+    0 0 12px oklch(0.45 0.22 330 / 0.20);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  animation: cell-breathe-candy 3s ease-in-out infinite;
+}
+.cell-face-down-candy:active {
+  transform: scale(0.94);
+}
+
+/* =============================================
+   CELL FACE-DOWN — MYSTIC JUNGLE (deep green)
+   ============================================= */
+.cell-face-down-jungle {
+  background: linear-gradient(135deg,
+    oklch(0.26 0.18 150) 0%,
+    oklch(0.18 0.14 145) 40%,
+    oklch(0.24 0.20 155) 100%);
+  border: 1.5px solid oklch(0.42 0.22 148);
+  box-shadow:
+    0 2px 8px oklch(0.06 0.06 155 / 0.9),
+    inset 0 1px 0 oklch(0.48 0.20 150 / 0.45),
+    0 0 12px oklch(0.38 0.20 150 / 0.20);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  animation: cell-breathe-jungle 3s ease-in-out infinite;
+}
+.cell-face-down-jungle:active {
+  transform: scale(0.94);
+}
+
+/* =============================================
+   CELL FACE-DOWN — CRYSTAL STORM (icy blue)
+   ============================================= */
+.cell-face-down-crystal {
+  background: linear-gradient(135deg,
+    oklch(0.32 0.20 218) 0%,
+    oklch(0.22 0.16 225) 40%,
+    oklch(0.30 0.22 212) 100%);
+  border: 1.5px solid oklch(0.50 0.22 215);
+  box-shadow:
+    0 2px 8px oklch(0.06 0.08 220 / 0.9),
+    inset 0 1px 0 oklch(0.65 0.18 215 / 0.50),
+    0 0 14px oklch(0.50 0.20 215 / 0.22);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  animation: cell-breathe-crystal 3s ease-in-out infinite;
+}
+.cell-face-down-crystal:active {
+  transform: scale(0.94);
+}
+
+/* =============================================
+   CELL FACE-DOWN — SOLAR INFERNO (orange-red)
+   ============================================= */
+.cell-face-down-inferno {
+  background: linear-gradient(135deg,
+    oklch(0.30 0.22 22) 0%,
+    oklch(0.20 0.18 15) 40%,
+    oklch(0.28 0.24 28) 100%);
+  border: 1.5px solid oklch(0.48 0.26 20);
+  box-shadow:
+    0 2px 8px oklch(0.07 0.07 20 / 0.9),
+    inset 0 1px 0 oklch(0.55 0.24 25 / 0.45),
+    0 0 14px oklch(0.46 0.24 18 / 0.25);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  animation: cell-breathe-inferno 3s ease-in-out infinite;
+}
+.cell-face-down-inferno:active {
+  transform: scale(0.94);
+}
+
+/* Frozen tile — icy blue, non-clickable */
+.cell-frozen {
+  background: linear-gradient(135deg,
+    oklch(0.40 0.16 215 / 0.7) 0%,
+    oklch(0.30 0.12 225 / 0.6) 100%);
+  border: 1.5px solid oklch(0.55 0.18 215 / 0.8);
+  box-shadow: 0 0 12px oklch(0.55 0.18 215 / 0.4), inset 0 1px 0 oklch(0.75 0.16 215 / 0.3);
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.cell-bronze {
+  background: linear-gradient(135deg, oklch(0.62 0.16 55) 0%, oklch(0.52 0.14 50) 100%);
+  border: 1.5px solid oklch(0.72 0.18 55);
+  box-shadow: 0 0 12px oklch(0.65 0.18 55 / 0.5), inset 0 1px 0 oklch(0.75 0.16 60 / 0.4);
+}
+.cell-silver {
+  background: linear-gradient(135deg, oklch(0.78 0.04 285) 0%, oklch(0.65 0.04 285) 100%);
+  border: 1.5px solid oklch(0.85 0.04 285);
+  box-shadow: 0 0 12px oklch(0.75 0.04 285 / 0.5), inset 0 1px 0 oklch(0.90 0.02 0 / 0.4);
+}
+.cell-gold {
+  background: linear-gradient(135deg, oklch(0.84 0.22 75) 0%, oklch(0.74 0.20 68) 100%);
+  border: 1.5px solid oklch(0.90 0.22 78);
+  box-shadow: 0 0 16px oklch(0.84 0.22 75 / 0.7), inset 0 1px 0 oklch(0.95 0.18 80 / 0.5);
+}
+.cell-diamond {
+  background: linear-gradient(135deg, oklch(0.80 0.20 220) 0%, oklch(0.70 0.22 210) 100%);
+  border: 1.5px solid oklch(0.90 0.20 225);
+  box-shadow: 0 0 20px oklch(0.80 0.20 220 / 0.8), inset 0 1px 0 oklch(0.95 0.15 225 / 0.5);
+}
+.cell-bomb {
+  background: linear-gradient(135deg, oklch(0.35 0.18 20) 0%, oklch(0.25 0.14 20) 100%);
+  border: 1.5px solid oklch(0.55 0.22 20);
+  box-shadow: 0 0 16px oklch(0.55 0.22 20 / 0.6);
+}
+.cell-bomb-exploded {
+  background: linear-gradient(135deg, oklch(0.45 0.22 20) 0%, oklch(0.30 0.18 20) 100%);
+  border: 1.5px solid oklch(0.65 0.25 20);
+  box-shadow: 0 0 24px oklch(0.60 0.25 20 / 0.9);
+  animation: pulse-red 0.8s ease-in-out infinite alternate;
+}
+
+/* Chain bomb cell */
+.cell-chain_bomb {
+  background: linear-gradient(135deg, oklch(0.42 0.22 45) 0%, oklch(0.30 0.18 30) 100%);
+  border: 1.5px solid oklch(0.62 0.24 40);
+  box-shadow: 0 0 16px oklch(0.62 0.24 40 / 0.7);
+}
+.cell-chain-exploded {
+  background: linear-gradient(135deg, oklch(0.50 0.25 40) 0%, oklch(0.35 0.20 30) 100%);
+  border: 1.5px solid oklch(0.70 0.26 38);
+  box-shadow: 0 0 28px oklch(0.65 0.26 38 / 0.95);
+  animation: pulse-orange 0.6s ease-in-out infinite alternate;
+}
+
+/* Detector warning glow */
+.cell-warning {
+  box-shadow: 0 0 14px oklch(0.72 0.25 30 / 0.8), inset 0 0 8px oklch(0.72 0.25 30 / 0.3);
+  border-color: oklch(0.72 0.25 30);
+}
+
+
+/* =============================================
+   BREATHE ANIMATIONS — PER UNIVERSE
+   ============================================= */
+@keyframes cell-breathe {
+  0%, 100% {
+    box-shadow: 0 2px 8px oklch(0.08 0.05 280 / 0.8), inset 0 1px 0 oklch(0.45 0.14 290 / 0.4);
+  }
+  50% {
+    box-shadow: 0 2px 8px oklch(0.08 0.05 280 / 0.8), inset 0 1px 0 oklch(0.45 0.14 290 / 0.4), 0 0 10px oklch(0.45 0.14 290 / 0.15);
+  }
+}
+
+@keyframes cell-breathe-candy {
+  0%, 100% {
+    box-shadow: 0 2px 8px oklch(0.08 0.06 330 / 0.9), inset 0 1px 0 oklch(0.55 0.22 340 / 0.45), 0 0 8px oklch(0.45 0.22 330 / 0.15);
+  }
+  50% {
+    box-shadow: 0 2px 8px oklch(0.08 0.06 330 / 0.9), inset 0 1px 0 oklch(0.55 0.22 340 / 0.55), 0 0 18px oklch(0.50 0.24 335 / 0.35);
+  }
+}
+
+@keyframes cell-breathe-jungle {
+  0%, 100% {
+    box-shadow: 0 2px 8px oklch(0.06 0.06 155 / 0.9), inset 0 1px 0 oklch(0.48 0.20 150 / 0.40), 0 0 8px oklch(0.38 0.20 150 / 0.15);
+  }
+  50% {
+    box-shadow: 0 2px 8px oklch(0.06 0.06 155 / 0.9), inset 0 1px 0 oklch(0.48 0.20 150 / 0.55), 0 0 18px oklch(0.44 0.22 150 / 0.35);
+  }
+}
+
+@keyframes cell-breathe-crystal {
+  0%, 100% {
+    box-shadow: 0 2px 8px oklch(0.06 0.08 220 / 0.9), inset 0 1px 0 oklch(0.65 0.18 215 / 0.45), 0 0 10px oklch(0.50 0.20 215 / 0.15);
+  }
+  50% {
+    box-shadow: 0 2px 8px oklch(0.06 0.08 220 / 0.9), inset 0 1px 0 oklch(0.70 0.18 215 / 0.60), 0 0 22px oklch(0.58 0.22 215 / 0.40);
+  }
+}
+
+@keyframes cell-breathe-inferno {
+  0%, 100% {
+    box-shadow: 0 2px 8px oklch(0.07 0.07 20 / 0.9), inset 0 1px 0 oklch(0.55 0.24 25 / 0.40), 0 0 10px oklch(0.46 0.24 18 / 0.20);
+  }
+  50% {
+    box-shadow: 0 2px 8px oklch(0.07 0.07 20 / 0.9), inset 0 1px 0 oklch(0.60 0.26 25 / 0.55), 0 0 22px oklch(0.52 0.26 20 / 0.40);
+  }
+}
+
+@keyframes progress-shimmer {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+@keyframes pulse-red {
+  from { box-shadow: 0 0 16px oklch(0.60 0.25 20 / 0.6); }
+  to   { box-shadow: 0 0 28px oklch(0.60 0.25 20 / 1.0); }
+}
+
+@keyframes pulse-orange {
+  from { box-shadow: 0 0 16px oklch(0.65 0.26 38 / 0.6); }
+  to   { box-shadow: 0 0 36px oklch(0.65 0.26 38 / 1.0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(3deg); }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes score-pop {
+  0% { transform: scale(1.4) translateY(-8px); opacity: 1; }
+  100% { transform: scale(1) translateY(-20px); opacity: 0; }
+}
+
+.float-anim { animation: float 3s ease-in-out infinite; }
+.sparkle-anim { animation: sparkle 2s ease-in-out infinite; }
+
+/* Star rating */
+.star-filled { color: oklch(0.84 0.22 75); filter: drop-shadow(0 0 4px oklch(0.84 0.22 75 / 0.8)); }
+.star-empty  { color: oklch(0.35 0.05 285); }
+
+/* Progress bar candy gradient */
+.progress-candy {
+  background: linear-gradient(90deg,
+    oklch(0.72 0.25 340) 0%,
+    oklch(0.76 0.22 290) 50%,
+    oklch(0.76 0.18 180) 100%);
+  background-size: 200% 100%;
+  animation: progress-shimmer 2.5s linear infinite;
+}
+
+/* Progress bar jungle gradient */
+.progress-jungle {
+  background: linear-gradient(90deg,
+    oklch(0.42 0.18 148) 0%,
+    oklch(0.55 0.20 145) 50%,
+    oklch(0.70 0.18 130) 100%);
+  background-size: 200% 100%;
+  animation: progress-shimmer 2.5s linear infinite;
+}
+
+/* Progress bar crystal gradient — icy teal/blue */
+.progress-crystal {
+  background: linear-gradient(90deg,
+    oklch(0.55 0.20 215) 0%,
+    oklch(0.68 0.22 210) 50%,
+    oklch(0.78 0.18 205) 100%);
+  background-size: 200% 100%;
+  animation: progress-shimmer 2.5s linear infinite;
+}
+
+/* Progress bar inferno gradient — red/orange fire */
+.progress-inferno {
+  background: linear-gradient(90deg,
+    oklch(0.55 0.24 20) 0%,
+    oklch(0.68 0.26 28) 50%,
+    oklch(0.78 0.22 40) 100%);
+  background-size: 200% 100%;
+  animation: progress-shimmer 2.5s linear infinite;
+}
+
+/* Boss level glow */
+.boss-glow {
+  box-shadow: 0 0 24px oklch(0.72 0.25 340 / 0.5), 0 0 48px oklch(0.72 0.25 340 / 0.2);
+}
+
+/* Jungle boss glow */
+.jungle-boss-glow {
+  box-shadow: 0 0 24px oklch(0.55 0.20 148 / 0.6), 0 0 48px oklch(0.42 0.18 148 / 0.3);
+}
+
+/* Crystal boss glow — icy blue shimmer */
+.crystal-boss-glow {
+  box-shadow: 0 0 24px oklch(0.65 0.22 215 / 0.6), 0 0 48px oklch(0.50 0.18 220 / 0.3);
+}
+
+/* Inferno boss glow — fiery red-orange pulse */
+.inferno-boss-glow {
+  box-shadow: 0 0 24px oklch(0.65 0.26 22 / 0.7), 0 0 48px oklch(0.50 0.22 18 / 0.35);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: oklch(0.35 0.08 285); border-radius: 2px; }

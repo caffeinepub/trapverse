@@ -64,6 +64,10 @@ function AppInner() {
     setShadowLevelStars,
     quantumLevelStars,
     setQuantumLevelStars,
+    labyrinthLevelStars,
+    setLabyrinthLevelStars,
+    frozenLevelStars,
+    setFrozenLevelStars,
     powerups,
     setPowerups,
     quests,
@@ -102,6 +106,8 @@ function AppInner() {
         neon: "Neon Circuit",
         shadow: "Shadow Dimension",
         quantum: "Quantum Realm",
+        labyrinth: "Infernal Labyrinth",
+        frozen: "Frozen Eternity",
       };
       (window as any).AndroidAudioBridge?.changeTheme(themeMap[universe]);
     } catch {
@@ -171,6 +177,12 @@ function AppInner() {
       case "quantum":
         setQuantumLevelStars(levelIndex, stars, true);
         break;
+      case "labyrinth":
+        setLabyrinthLevelStars(levelIndex, stars, true);
+        break;
+      case "frozen":
+        setFrozenLevelStars(levelIndex, stars, true);
+        break;
     }
     updateLevelMutation.mutate({ level: currentLevel, stars, completed: true });
     setCoins((prev) => prev + coinsEarned);
@@ -215,8 +227,8 @@ function AppInner() {
     updateAchievementProgress("level_5", newTotalLevels);
     updateAchievementProgress("level_10", newTotalLevels);
     updateAchievementProgress("level_25", newTotalLevels);
-    updateAchievementProgress("level_44", newTotalLevels);
-    updateAchievementProgress("level_66", newTotalLevels);
+    updateAchievementProgress("level_100", newTotalLevels);
+    updateAchievementProgress("level_200", newTotalLevels);
     updateAchievementProgress("coin_100", newTotalCoins);
     updateAchievementProgress("coin_500", newTotalCoins);
     updateAchievementProgress("coin_1000", newTotalCoins);
@@ -249,6 +261,12 @@ function AppInner() {
     const quantumBossDone =
       quantumLevelStars[20]?.completed ||
       (currentUniverse === "quantum" && isBoss && stars > 0);
+    const labyrinthBossDone =
+      labyrinthLevelStars[20]?.completed ||
+      (currentUniverse === "labyrinth" && isBoss && stars > 0);
+    const frozenBossDone =
+      frozenLevelStars[20]?.completed ||
+      (currentUniverse === "frozen" && isBoss && stars > 0);
     const uniqueBossCount = [
       candyBossDone,
       jungleBossDone,
@@ -258,6 +276,8 @@ function AppInner() {
       neonBossDone,
       shadowBossDone,
       quantumBossDone,
+      labyrinthBossDone,
+      frozenBossDone,
     ].filter(Boolean).length;
     updateAchievementProgress("boss_all", uniqueBossCount);
     updateAchievementProgress("three_stars", newThreeStars);
@@ -278,12 +298,14 @@ function AppInner() {
       voidBossDone &&
       neonBossDone &&
       shadowBossDone &&
-      quantumBossDone;
+      quantumBossDone &&
+      labyrinthBossDone &&
+      frozenBossDone;
     if (allBossesBeaten) {
-      updateAchievementProgress("all_universes", 6);
+      updateAchievementProgress("all_universes", 10);
     }
 
-    if (currentLevel < 11) {
+    if (currentLevel < 21) {
       setCurrentLevel((prev) => prev + 1);
     } else {
       setScreen("level-select");
@@ -352,6 +374,10 @@ function AppInner() {
         return shadowLevelStars;
       case "quantum":
         return quantumLevelStars;
+      case "labyrinth":
+        return labyrinthLevelStars;
+      case "frozen":
+        return frozenLevelStars;
       default:
         return levelStars;
     }
@@ -397,6 +423,7 @@ function AppInner() {
                 neonStars={neonLevelStars}
                 shadowStars={shadowLevelStars}
                 quantumStars={quantumLevelStars}
+                labyrinthStars={labyrinthLevelStars}
               />
             </motion.div>
           )}

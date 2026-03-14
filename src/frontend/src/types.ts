@@ -30,7 +30,9 @@ export type Universe =
   | "void"
   | "neon"
   | "shadow"
-  | "quantum";
+  | "quantum"
+  | "labyrinth"
+  | "frozen";
 
 export interface Cell {
   id: number;
@@ -116,6 +118,8 @@ export const UNIVERSE_GRID_SIZE: Record<Universe, number> = {
   neon: 10,
   shadow: 9,
   quantum: 8,
+  labyrinth: 10,
+  frozen: 9,
 };
 
 export const LEVEL_TARGETS = [
@@ -149,4 +153,12 @@ export const LEVEL_TARGETS_SHADOW = [
 export const LEVEL_TARGETS_QUANTUM = [
   140, 160, 180, 200, 220, 245, 270, 295, 320, 345, 370, 395, 420, 445, 470,
   495, 520, 550, 580, 615, 700,
+];
+export const LEVEL_TARGETS_LABYRINTH = [
+  200, 230, 262, 296, 332, 370, 410, 452, 496, 542, 590, 640, 692, 746, 803,
+  862, 923, 988, 1056, 1126, 1260,
+];
+export const LEVEL_TARGETS_FROZEN = [
+  175, 202, 231, 262, 295, 330, 367, 406, 447, 490, 535, 582, 631, 682, 735,
+  790, 848, 908, 970, 1034, 1160,
 ];

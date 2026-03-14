@@ -18,6 +18,8 @@ const KEYS = {
   neonLevelStars: "trapverse_neon_level_stars",
   shadowLevelStars: "trapverse_shadow_level_stars",
   quantumLevelStars: "trapverse_quantum_level_stars",
+  labyrinthLevelStars: "trapverse_labyrinth_level_stars",
+  frozenLevelStars: "trapverse_frozen_level_stars",
   powerups: "trapverse_powerups",
   quests: "trapverse_quests",
   questDate: "trapverse_quest_date",
@@ -91,18 +93,18 @@ const ACHIEVEMENT_DEFS: Omit<Achievement, "progress" | "unlocked">[] = [
     target: 25,
   },
   {
-    id: "level_44",
-    titleKey: "ach.level_44.title",
-    descKey: "ach.level_44.desc",
+    id: "level_100",
+    titleKey: "ach.level_100.title",
+    descKey: "ach.level_100.desc",
     icon: "👑",
-    target: 44,
+    target: 100,
   },
   {
-    id: "level_66",
-    titleKey: "ach.level_66.title",
-    descKey: "ach.level_66.desc",
+    id: "level_200",
+    titleKey: "ach.level_200.title",
+    descKey: "ach.level_200.desc",
     icon: "🌌",
-    target: 66,
+    target: 200,
   },
   {
     id: "coin_100",
@@ -151,7 +153,7 @@ const ACHIEVEMENT_DEFS: Omit<Achievement, "progress" | "unlocked">[] = [
     titleKey: "ach.boss_all.title",
     descKey: "ach.boss_all.desc",
     icon: "🎖️",
-    target: 6,
+    target: 10,
   },
   {
     id: "three_stars",
@@ -172,7 +174,7 @@ const ACHIEVEMENT_DEFS: Omit<Achievement, "progress" | "unlocked">[] = [
     titleKey: "ach.all_universes.title",
     descKey: "ach.all_universes.desc",
     icon: "🌌",
-    target: 6,
+    target: 10,
   },
 ];
 
@@ -329,6 +331,12 @@ export function useGameStorage() {
   const [quantumLevelStars, setQuantumLevelStarsState] = useState<LevelStar[]>(
     () => loadLevelStars(KEYS.quantumLevelStars),
   );
+  const [labyrinthLevelStars, setLabyrinthLevelStarsState] = useState<
+    LevelStar[]
+  >(() => loadLevelStars(KEYS.labyrinthLevelStars));
+  const [frozenLevelStars, setFrozenLevelStarsState] = useState<LevelStar[]>(
+    () => loadLevelStars(KEYS.frozenLevelStars),
+  );
   const [powerups, setPowerupsState] = useState<PowerupCounts>(loadPowerups);
   const [quests, setQuestsState] = useState<Quest[]>(loadQuests);
   const [achievements, setAchievementsState] =
@@ -402,6 +410,14 @@ export function useGameStorage() {
   );
   const setQuantumLevelStars = useCallback(
     makeLevelStarsSetter(setQuantumLevelStarsState, KEYS.quantumLevelStars),
+    [],
+  );
+  const setLabyrinthLevelStars = useCallback(
+    makeLevelStarsSetter(setLabyrinthLevelStarsState, KEYS.labyrinthLevelStars),
+    [],
+  );
+  const setFrozenLevelStars = useCallback(
+    makeLevelStarsSetter(setFrozenLevelStarsState, KEYS.frozenLevelStars),
     [],
   );
 
@@ -526,6 +542,10 @@ export function useGameStorage() {
     setShadowLevelStars,
     quantumLevelStars,
     setQuantumLevelStars,
+    labyrinthLevelStars,
+    setLabyrinthLevelStars,
+    frozenLevelStars,
+    setFrozenLevelStars,
     powerups,
     setPowerups,
     quests,

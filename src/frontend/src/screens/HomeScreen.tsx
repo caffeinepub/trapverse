@@ -34,7 +34,8 @@ interface HomeScreenProps {
   voidStars: LevelStar[];
   neonStars: LevelStar[];
   shadowStars: LevelStar[];
-  quantumStars?: LevelStar[];
+  quantumStars: LevelStar[];
+  labyrinthStars: LevelStar[];
 }
 
 const particles = [
@@ -170,6 +171,8 @@ export function HomeScreen({
   voidStars,
   neonStars,
   shadowStars,
+  quantumStars,
+  labyrinthStars,
 }: HomeScreenProps) {
   const { t, lang, setLang, languages } = useLanguage();
   const [showLangModal, setShowLangModal] = useState(false);
@@ -181,6 +184,8 @@ export function HomeScreen({
   const neonUnlocked = voidStars[20]?.completed === true;
   const shadowUnlocked = neonStars[20]?.completed === true;
   const quantumUnlocked = shadowStars[20]?.completed === true;
+  const labyrinthUnlocked = quantumStars[20]?.completed === true;
+  const frozenUnlocked = labyrinthStars[20]?.completed === true;
 
   const lockedLabel = t("home.locked");
 
@@ -885,6 +890,183 @@ export function HomeScreen({
                     duration: 1.5,
                     repeat: Number.POSITIVE_INFINITY,
                     delay: 2.1,
+                  }}
+                >
+                  →
+                </motion.div>
+              )}
+            </div>
+          </motion.button>
+
+          {/* Infernal Labyrinth */}
+          <motion.button
+            type="button"
+            data-ocid="home.labyrinth_button"
+            className={`w-full relative rounded-3xl p-5 overflow-hidden text-left transition-opacity ${labyrinthUnlocked ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
+            style={{
+              background:
+                "linear-gradient(135deg, oklch(0.18 0.16 15) 0%, oklch(0.13 0.12 10) 100%)",
+              border: "1.5px solid oklch(0.42 0.22 15)",
+            }}
+            onClick={() => {
+              if (labyrinthUnlocked) onSelectUniverse("labyrinth");
+            }}
+            whileHover={labyrinthUnlocked ? { scale: 1.01 } : {}}
+            whileTap={labyrinthUnlocked ? { scale: 0.97 } : {}}
+          >
+            {!labyrinthUnlocked && <LockOverlay label={lockedLabel} />}
+            <div
+              className="absolute inset-0 opacity-25"
+              style={{
+                background:
+                  "radial-gradient(ellipse at 30% 50%, oklch(0.55 0.28 15) 0%, transparent 55%), radial-gradient(ellipse at 75% 25%, oklch(0.42 0.24 25) 0%, transparent 40%)",
+              }}
+            />
+            {/* Ember particles */}
+            <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+              {["e1", "e2", "e3", "e4"].map((eid, si) => (
+                <motion.div
+                  key={eid}
+                  className="absolute rounded-full"
+                  style={{
+                    width: 3,
+                    height: 3,
+                    background: "oklch(0.80 0.26 25)",
+                    bottom: `${10 + si * 15}%`,
+                    left: `${10 + si * 20}%`,
+                  }}
+                  animate={{ y: [0, -20, 0], opacity: [0.8, 0.2, 0.8] }}
+                  transition={{
+                    duration: 1.8 + si * 0.3,
+                    repeat: Number.POSITIVE_INFINITY,
+                    delay: si * 0.4,
+                  }}
+                />
+              ))}
+            </div>
+            <CardShimmer delay={8} />
+            <div className="relative flex items-center gap-4">
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+                style={{
+                  background:
+                    "linear-gradient(135deg, oklch(0.40 0.26 15), oklch(0.28 0.20 10))",
+                  boxShadow: "0 0 14px oklch(0.50 0.28 18 / 0.5)",
+                }}
+              >
+                🔥
+              </div>
+              <div className="flex-1">
+                <h2
+                  className="font-display font-bold text-lg"
+                  style={{ color: "oklch(0.88 0.22 20)" }}
+                >
+                  {t("home.universe.labyrinth.name")}
+                </h2>
+                <p className="text-xs" style={{ color: "oklch(0.52 0.16 15)" }}>
+                  {t("home.universe.labyrinth.desc")}
+                </p>
+              </div>
+              {labyrinthUnlocked && (
+                <motion.div
+                  className="text-xl"
+                  style={{ color: "oklch(0.72 0.24 18)" }}
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Number.POSITIVE_INFINITY,
+                    delay: 2.4,
+                  }}
+                >
+                  →
+                </motion.div>
+              )}
+            </div>
+          </motion.button>
+
+          {/* Frozen Eternity */}
+          <motion.button
+            type="button"
+            data-ocid="home.frozen_button"
+            className={`w-full relative rounded-3xl p-5 overflow-hidden text-left transition-opacity ${frozenUnlocked ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
+            style={{
+              background:
+                "linear-gradient(135deg, oklch(0.18 0.10 215) 0%, oklch(0.13 0.08 225) 100%)",
+              border: "1.5px solid oklch(0.50 0.18 210)",
+            }}
+            onClick={() => {
+              if (frozenUnlocked) onSelectUniverse("frozen");
+            }}
+            whileHover={frozenUnlocked ? { scale: 1.01 } : {}}
+            whileTap={frozenUnlocked ? { scale: 0.97 } : {}}
+          >
+            {!frozenUnlocked && <LockOverlay label={lockedLabel} />}
+            <div
+              className="absolute inset-0 opacity-25"
+              style={{
+                background:
+                  "radial-gradient(ellipse at 70% 30%, oklch(0.70 0.20 210) 0%, transparent 50%), radial-gradient(ellipse at 20% 70%, oklch(0.55 0.16 225) 0%, transparent 45%)",
+              }}
+            />
+            {/* Ice crystal sparkles */}
+            <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+              {["c1", "c2", "c3", "c4"].map((cid, si) => (
+                <motion.div
+                  key={cid}
+                  className="absolute"
+                  style={{
+                    width: 4,
+                    height: 4,
+                    background: "oklch(0.95 0.08 210)",
+                    borderRadius: "1px",
+                    top: `${15 + si * 18}%`,
+                    right: `${8 + (si % 3) * 12}%`,
+                    transform: "rotate(45deg)",
+                  }}
+                  animate={{ opacity: [0.2, 1, 0.2], scale: [0.8, 1.2, 0.8] }}
+                  transition={{
+                    duration: 2.2 + si * 0.4,
+                    repeat: Number.POSITIVE_INFINITY,
+                    delay: si * 0.5,
+                  }}
+                />
+              ))}
+            </div>
+            <CardShimmer delay={9} />
+            <div className="relative flex items-center gap-4">
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+                style={{
+                  background:
+                    "linear-gradient(135deg, oklch(0.42 0.18 210), oklch(0.30 0.14 220))",
+                  boxShadow: "0 0 14px oklch(0.60 0.20 210 / 0.5)",
+                }}
+              >
+                ❄️
+              </div>
+              <div className="flex-1">
+                <h2
+                  className="font-display font-bold text-lg"
+                  style={{ color: "oklch(0.88 0.16 210)" }}
+                >
+                  {t("home.universe.frozen.name")}
+                </h2>
+                <p
+                  className="text-xs"
+                  style={{ color: "oklch(0.52 0.12 215)" }}
+                >
+                  {t("home.universe.frozen.desc")}
+                </p>
+              </div>
+              {frozenUnlocked && (
+                <motion.div
+                  className="text-xl"
+                  style={{ color: "oklch(0.72 0.18 210)" }}
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Number.POSITIVE_INFINITY,
+                    delay: 2.7,
                   }}
                 >
                   →

@@ -611,3 +611,147 @@
   background-size: 200% 100%;
   animation: progress-shimmer 2.5s linear infinite;
 }
+
+/* =============================================
+   INFERNAL LABYRINTH BACKGROUND
+   ============================================= */
+.labyrinth-bg {
+  background:
+    radial-gradient(ellipse at 25% 20%, oklch(0.32 0.24 15 / 0.70) 0%, transparent 40%),
+    radial-gradient(ellipse at 75% 70%, oklch(0.22 0.18 10 / 0.55) 0%, transparent 45%),
+    radial-gradient(ellipse at 60% 10%, oklch(0.26 0.20 20 / 0.35) 0%, transparent 50%),
+    oklch(0.08 0.07 10);
+  animation: bg-shimmer 8s ease-in-out infinite;
+}
+
+/* =============================================
+   FROZEN ETERNITY BACKGROUND
+   ============================================= */
+.frozen-bg {
+  background:
+    radial-gradient(ellipse at 60% 15%, oklch(0.42 0.18 210 / 0.65) 0%, transparent 40%),
+    radial-gradient(ellipse at 20% 75%, oklch(0.32 0.14 220 / 0.50) 0%, transparent 45%),
+    radial-gradient(ellipse at 80% 55%, oklch(0.36 0.16 205 / 0.30) 0%, transparent 40%),
+    oklch(0.10 0.08 215);
+  animation: bg-shimmer 8s ease-in-out infinite;
+}
+
+/* =============================================
+   CELL FACE-DOWN — INFERNAL LABYRINTH (dark crimson)
+   ============================================= */
+.cell-face-down-labyrinth {
+  background: linear-gradient(135deg,
+    oklch(0.22 0.18 15) 0%,
+    oklch(0.15 0.14 10) 40%,
+    oklch(0.20 0.20 12) 100%);
+  border: 1.5px solid oklch(0.45 0.24 15);
+  box-shadow:
+    0 2px 8px oklch(0.06 0.08 10 / 0.9),
+    inset 0 1px 0 oklch(0.50 0.22 18 / 0.40),
+    0 0 10px oklch(0.38 0.24 12 / 0.18);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  animation: cell-breathe-labyrinth 3s ease-in-out infinite;
+}
+.cell-face-down-labyrinth:active {
+  transform: scale(0.94);
+}
+@keyframes cell-breathe-labyrinth {
+  0%, 100% { box-shadow: 0 2px 8px oklch(0.06 0.08 10 / 0.9), inset 0 1px 0 oklch(0.50 0.22 18 / 0.40), 0 0 8px oklch(0.38 0.24 12 / 0.15); }
+  50%       { box-shadow: 0 2px 8px oklch(0.06 0.08 10 / 0.9), inset 0 1px 0 oklch(0.50 0.22 18 / 0.55), 0 0 18px oklch(0.48 0.28 15 / 0.28); }
+}
+
+/* =============================================
+   CELL FACE-DOWN — FROZEN ETERNITY (ice blue)
+   ============================================= */
+.cell-face-down-frozen {
+  background: linear-gradient(135deg,
+    oklch(0.28 0.16 212) 0%,
+    oklch(0.20 0.12 218) 40%,
+    oklch(0.26 0.18 208) 100%);
+  border: 1.5px solid oklch(0.52 0.20 210);
+  box-shadow:
+    0 2px 8px oklch(0.08 0.08 218 / 0.9),
+    inset 0 1px 0 oklch(0.65 0.18 208 / 0.45),
+    0 0 10px oklch(0.48 0.18 212 / 0.18);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.cell-face-down-frozen:active {
+  transform: scale(0.94);
+}
+
+/* =============================================
+   FROZEN UNIVERSE SPECIAL CELL STATES
+   ============================================= */
+/* Frozen cell (not yet melted) */
+.cell-frozen-ice {
+  background: linear-gradient(135deg,
+    oklch(0.35 0.18 208) 0%,
+    oklch(0.24 0.14 215) 100%);
+  border: 1.5px solid oklch(0.62 0.22 208);
+  box-shadow: 0 0 14px oklch(0.60 0.20 210 / 0.4), inset 0 1px 0 oklch(0.80 0.14 205 / 0.5);
+  animation: ice-shimmer 2.5s ease-in-out infinite;
+}
+@keyframes ice-shimmer {
+  0%, 100% { box-shadow: 0 0 10px oklch(0.55 0.18 210 / 0.35), inset 0 1px 0 oklch(0.80 0.14 205 / 0.45); }
+  50%       { box-shadow: 0 0 20px oklch(0.70 0.22 208 / 0.55), inset 0 1px 0 oklch(0.90 0.14 202 / 0.65); }
+}
+
+/* Melted cell (tapped once, cracked ice) */
+.cell-frozen-melted {
+  background: linear-gradient(135deg,
+    oklch(0.30 0.14 215) 0%,
+    oklch(0.22 0.10 220) 100%);
+  border: 1.5px dashed oklch(0.55 0.18 212);
+  box-shadow: 0 0 8px oklch(0.45 0.16 215 / 0.3);
+}
+
+/* =============================================
+   LABYRINTH DARKENED CELL
+   ============================================= */
+.cell-labyrinth-darkened {
+  background: linear-gradient(135deg,
+    oklch(0.08 0.06 10) 0%,
+    oklch(0.05 0.04 15) 100%);
+  border: 1.5px solid oklch(0.22 0.10 12);
+  box-shadow: 0 0 10px oklch(0.15 0.10 10 / 0.5);
+  color: oklch(0.45 0.18 20);
+  animation: labyrinth-pulse 2s ease-in-out infinite;
+}
+@keyframes labyrinth-pulse {
+  0%, 100% { box-shadow: 0 0 8px oklch(0.15 0.10 10 / 0.4); }
+  50%       { box-shadow: 0 0 18px oklch(0.30 0.18 15 / 0.6); }
+}
+
+/* =============================================
+   PROGRESS BARS — LABYRINTH + FROZEN
+   ============================================= */
+.progress-labyrinth {
+  background: linear-gradient(90deg, oklch(0.45 0.24 15), oklch(0.62 0.28 20));
+  background-size: 200% 100%;
+  animation: progress-shimmer 2.5s linear infinite;
+}
+
+.progress-frozen {
+  background: linear-gradient(90deg, oklch(0.50 0.20 210), oklch(0.68 0.22 200));
+  background-size: 200% 100%;
+  animation: progress-shimmer 2.5s linear infinite;
+}
+
+/* =============================================
+   BOSS GLOWS — LABYRINTH + FROZEN
+   ============================================= */
+.shadow-boss-glow {
+  box-shadow: 0 0 24px oklch(0.48 0.20 285 / 0.6), 0 0 48px oklch(0.30 0.16 292 / 0.3);
+}
+
+.quantum-boss-glow {
+  box-shadow: 0 0 24px oklch(0.58 0.24 220 / 0.6), 0 0 48px oklch(0.40 0.20 215 / 0.3);
+}
+
+.labyrinth-boss-glow {
+  box-shadow: 0 0 24px oklch(0.60 0.26 15 / 0.7), 0 0 48px oklch(0.42 0.22 10 / 0.35);
+}
+
+.frozen-boss-glow {
+  box-shadow: 0 0 24px oklch(0.65 0.22 210 / 0.6), 0 0 48px oklch(0.48 0.18 215 / 0.3);
+}

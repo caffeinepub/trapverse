@@ -108,6 +108,20 @@ const UNIVERSE_CONFETTI_COLORS: Record<Universe, string[]> = {
     "oklch(0.85 0.18 195)",
     "oklch(0.65 0.28 210)",
   ],
+  labyrinth: [
+    "oklch(0.72 0.28 15)",
+    "oklch(0.60 0.26 25)",
+    "oklch(0.80 0.22 35)",
+    "oklch(0.50 0.24 10)",
+    "oklch(0.88 0.20 45)",
+  ],
+  frozen: [
+    "oklch(0.80 0.20 210)",
+    "oklch(0.70 0.18 220)",
+    "oklch(0.90 0.12 200)",
+    "oklch(0.65 0.22 215)",
+    "oklch(0.95 0.08 225)",
+  ],
 };
 
 const CONFETTI_SEEDS = [
@@ -327,6 +341,14 @@ export function GameBoardScreen({
     shadowBossCountdown,
     quantumRevealActive,
     quantumFlashCountdown,
+    labyrinthDarkenedCells,
+    labyrinthBossCountdown,
+    showLabyrinthDarkenNotif,
+    frozenCells,
+    meltedCells,
+    frozenTimer,
+    frozenBossCountdown,
+    showFrozenRefreezeNotif,
     revealCell,
     activatePowerup,
     resetGame,
@@ -375,7 +397,15 @@ export function GameBoardScreen({
             ? "void-bg"
             : universe === "neon"
               ? "neon-bg"
-              : "candy-bg";
+              : universe === "shadow"
+                ? "shadow-bg"
+                : universe === "quantum"
+                  ? "quantum-bg"
+                  : universe === "labyrinth"
+                    ? "labyrinth-bg"
+                    : universe === "frozen"
+                      ? "frozen-bg"
+                      : "candy-bg";
   const progressClass =
     universe === "jungle"
       ? "progress-jungle"
@@ -387,7 +417,15 @@ export function GameBoardScreen({
             ? "progress-void"
             : universe === "neon"
               ? "progress-neon"
-              : "progress-candy";
+              : universe === "shadow"
+                ? "progress-shadow"
+                : universe === "quantum"
+                  ? "progress-quantum"
+                  : universe === "labyrinth"
+                    ? "progress-labyrinth"
+                    : universe === "frozen"
+                      ? "progress-frozen"
+                      : "progress-candy";
   const progressPct = Math.min(100, Math.round((score / target) * 100));
   const coinsEarned =
     starsEarned === 3
@@ -410,7 +448,15 @@ export function GameBoardScreen({
             ? t("game.boss.void")
             : universe === "neon"
               ? t("game.boss.neon")
-              : t("game.boss.candy");
+              : universe === "shadow"
+                ? t("game.boss.shadow")
+                : universe === "quantum"
+                  ? t("game.boss.quantum")
+                  : universe === "labyrinth"
+                    ? t("game.boss.labyrinth")
+                    : universe === "frozen"
+                      ? t("game.boss.frozen")
+                      : t("game.boss.candy");
 
   const levelEmoji =
     universe === "jungle"
@@ -423,7 +469,15 @@ export function GameBoardScreen({
             ? "🌑"
             : universe === "neon"
               ? "⚡"
-              : "🍭";
+              : universe === "shadow"
+                ? "🌫️"
+                : universe === "quantum"
+                  ? "⚛️"
+                  : universe === "labyrinth"
+                    ? "🔥"
+                    : universe === "frozen"
+                      ? "❄️"
+                      : "🍭";
   const levelLabel = `${levelEmoji} ${t("levelSelect.level")} ${level}`;
 
   const handleActivatePowerup = (
@@ -466,7 +520,15 @@ export function GameBoardScreen({
             ? "🌌"
             : universe === "neon"
               ? "⚡"
-              : "🎉";
+              : universe === "shadow"
+                ? "👁️"
+                : universe === "quantum"
+                  ? "⚛️"
+                  : universe === "labyrinth"
+                    ? "🔥"
+                    : universe === "frozen"
+                      ? "❄️"
+                      : "🎉";
 
   const loseEmoji =
     universe === "inferno" && isBoss
@@ -479,7 +541,13 @@ export function GameBoardScreen({
             ? "🌑"
             : universe === "neon" && isBoss
               ? "💀"
-              : "💥";
+              : universe === "labyrinth"
+                ? "🔥"
+                : universe === "frozen" && frozenTimer === 0
+                  ? "⏰"
+                  : universe === "frozen"
+                    ? "🧊"
+                    : "💥";
   const loseTitle =
     universe === "inferno" && isBoss
       ? t("game.lose.burnedAlive")
@@ -491,7 +559,13 @@ export function GameBoardScreen({
             ? t("game.lose.voidConsumed")
             : universe === "neon" && isBoss
               ? t("game.lose.virusSpread")
-              : t("game.lose.boom");
+              : universe === "labyrinth"
+                ? t("game.lose.labyrinthTitle")
+                : universe === "frozen" && frozenTimer === 0
+                  ? t("game.lose.frozenTimerTitle")
+                  : universe === "frozen"
+                    ? t("game.lose.frozenTitle")
+                    : t("game.lose.boom");
   const loseMsg =
     universe === "inferno" && isBoss
       ? t("game.lose.infernoMsg")
@@ -503,7 +577,11 @@ export function GameBoardScreen({
             ? t("game.lose.voidMsg")
             : universe === "neon" && isBoss
               ? t("game.lose.virusMsg")
-              : t("game.lose.hitBomb");
+              : universe === "labyrinth"
+                ? t("game.lose.labyrinthMsg")
+                : universe === "frozen"
+                  ? t("game.lose.frozenEternityMsg")
+                  : t("game.lose.hitBomb");
 
   // Universe-specific face-down tile class
   const faceDownClass = `cell-face-down-${universe}`;
@@ -658,6 +736,173 @@ export function GameBoardScreen({
           </motion.div>
         )}
 
+      {/* Labyrinth Boss Countdown */}
+      {universe === "labyrinth" &&
+        isBoss &&
+        labyrinthBossCountdown !== null &&
+        phase === "playing" && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-2 px-4 py-2 rounded-2xl border flex items-center justify-between"
+            style={{
+              background: "oklch(0.16 0.14 15 / 0.8)",
+              borderColor: "oklch(0.48 0.24 15)",
+            }}
+          >
+            <span
+              className="text-xs font-display font-bold"
+              style={{ color: "oklch(0.78 0.24 20)" }}
+            >
+              🔥 {t("game.labyrinthDarken")}
+            </span>
+            <span
+              className="font-display font-extrabold text-lg"
+              style={{ color: "oklch(0.86 0.26 20)" }}
+            >
+              {labyrinthBossCountdown}s
+            </span>
+          </motion.div>
+        )}
+
+      {/* Labyrinth Boss Darken Notification */}
+      <AnimatePresence>
+        {universe === "labyrinth" && isBoss && showLabyrinthDarkenNotif && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="mb-2 px-4 py-2 rounded-2xl border text-center"
+            style={{
+              background: "oklch(0.18 0.16 15 / 0.9)",
+              borderColor: "oklch(0.55 0.28 15)",
+            }}
+          >
+            <span
+              className="font-display font-extrabold text-sm"
+              style={{ color: "oklch(0.84 0.28 20)" }}
+            >
+              🔥 {t("game.labyrinthDarken")}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Frozen Universe Timer */}
+      {universe === "frozen" && frozenTimer !== null && phase === "playing" && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          data-ocid="game.frozen_timer_panel"
+          className="mb-3 rounded-2xl px-4 py-2 border"
+          style={{
+            background:
+              frozenTimer <= 10
+                ? "oklch(0.18 0.14 15 / 0.9)"
+                : "oklch(0.16 0.10 215 / 0.8)",
+            borderColor:
+              frozenTimer <= 10
+                ? "oklch(0.60 0.24 15)"
+                : "oklch(0.50 0.20 210)",
+          }}
+        >
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="flex items-center gap-1.5">
+              <span className="text-base">❄️</span>
+              <span
+                className="text-xs font-display font-bold"
+                style={{
+                  color:
+                    frozenTimer <= 10
+                      ? "oklch(0.72 0.24 20)"
+                      : "oklch(0.78 0.18 210)",
+                }}
+              >
+                {t("game.frozenTimer")}
+              </span>
+            </div>
+            <motion.span
+              className="font-display font-extrabold text-lg"
+              style={{
+                color:
+                  frozenTimer <= 10
+                    ? "oklch(0.80 0.26 20)"
+                    : "oklch(0.88 0.20 210)",
+              }}
+              animate={frozenTimer <= 10 ? { scale: [1, 1.15, 1] } : {}}
+              transition={{ duration: 0.5, repeat: Number.POSITIVE_INFINITY }}
+            >
+              {frozenTimer}s
+            </motion.span>
+          </div>
+          <div className="w-full h-2 rounded-full overflow-hidden bg-muted">
+            <motion.div
+              className="h-full rounded-full"
+              animate={{ width: `${Math.max(0, (frozenTimer / 60) * 100)}%` }}
+              transition={{ duration: 0.8 }}
+              style={{
+                background:
+                  frozenTimer <= 10
+                    ? "linear-gradient(90deg, oklch(0.55 0.24 20), oklch(0.70 0.28 15))"
+                    : "linear-gradient(90deg, oklch(0.55 0.18 210), oklch(0.72 0.22 200))",
+              }}
+            />
+          </div>
+        </motion.div>
+      )}
+
+      {/* Frozen Boss Countdown */}
+      {universe === "frozen" &&
+        isBoss &&
+        frozenBossCountdown !== null &&
+        phase === "playing" && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-2 px-4 py-2 rounded-2xl border flex items-center justify-between"
+            style={{
+              background: "oklch(0.16 0.12 215 / 0.8)",
+              borderColor: "oklch(0.48 0.20 210)",
+            }}
+          >
+            <span
+              className="text-xs font-display font-bold"
+              style={{ color: "oklch(0.76 0.18 212)" }}
+            >
+              🧊 {t("game.frozenRefreeze")}
+            </span>
+            <span
+              className="font-display font-extrabold text-lg"
+              style={{ color: "oklch(0.84 0.20 210)" }}
+            >
+              {frozenBossCountdown}s
+            </span>
+          </motion.div>
+        )}
+
+      {/* Frozen Refreeze Notification */}
+      <AnimatePresence>
+        {universe === "frozen" && showFrozenRefreezeNotif && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="mb-2 px-4 py-2 rounded-2xl border text-center"
+            style={{
+              background: "oklch(0.16 0.14 215 / 0.9)",
+              borderColor: "oklch(0.58 0.22 210)",
+            }}
+          >
+            <span
+              className="font-display font-extrabold text-sm"
+              style={{ color: "oklch(0.84 0.20 212)" }}
+            >
+              🧊 {t("game.frozenRefreeze")}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Score HUD */}
       <div className="mb-3 bg-card/60 rounded-2xl px-4 py-3 border border-border">
         <div className="flex justify-between items-center mb-2">
@@ -733,6 +978,18 @@ export function GameBoardScreen({
         })}
       </div>
 
+      {/* Frozen universe hint */}
+      {universe === "frozen" && phase === "playing" && (
+        <div className="mb-2 text-center">
+          <span
+            className="text-xs font-medium"
+            style={{ color: "oklch(0.60 0.14 215)" }}
+          >
+            ❄️ {t("game.frozenMelt")}
+          </span>
+        </div>
+      )}
+
       {/* Game grid */}
       <div className={`grid ${gridColsClass} gap-1.5 flex-1`}>
         {grid.map((cell, i) => {
@@ -748,6 +1005,16 @@ export function GameBoardScreen({
           // Shadow: cell is dark if not in visibleCells and not revealed
           const isShadowDark =
             universe === "shadow" && !cell.revealed && !visibleCells.has(i);
+          // Labyrinth: darkened cells
+          const isLabyrinthDark =
+            universe === "labyrinth" &&
+            !cell.revealed &&
+            labyrinthDarkenedCells.has(i);
+          // Frozen universe: cell state
+          const isFrozenCell =
+            universe === "frozen" && !cell.revealed && frozenCells.has(i);
+          const isMeltedCell =
+            universe === "frozen" && !cell.revealed && meltedCells.has(i);
           // Quantum: show cell type icon when reveal is active
           const showQuantumReveal =
             universe === "quantum" && !cell.revealed && quantumRevealActive;
@@ -856,6 +1123,53 @@ export function GameBoardScreen({
                 >
                   <span className="text-lg">🌑</span>
                 </motion.div>
+              )}
+              {isLabyrinthDark && !cell.revealed && (
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center"
+                  animate={{ opacity: [0.5, 0.9, 0.5] }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Number.POSITIVE_INFINITY,
+                  }}
+                >
+                  <span className={gridSize >= 7 ? "text-sm" : "text-base"}>
+                    ?
+                  </span>
+                </motion.div>
+              )}
+              {isFrozenCell && !cell.revealed && (
+                <motion.span
+                  className={
+                    gridSize >= 9
+                      ? "text-sm"
+                      : gridSize >= 7
+                        ? "text-base"
+                        : "text-xl"
+                  }
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{
+                    duration: 2.5,
+                    repeat: Number.POSITIVE_INFINITY,
+                  }}
+                >
+                  ❄️
+                </motion.span>
+              )}
+              {isMeltedCell && !cell.revealed && (
+                <motion.span
+                  className={
+                    gridSize >= 9
+                      ? "text-sm"
+                      : gridSize >= 7
+                        ? "text-base"
+                        : "text-xl"
+                  }
+                  animate={{ rotate: [0, -5, 5, 0] }}
+                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                >
+                  💧
+                </motion.span>
               )}
               {isShadowDark && !cell.revealed && (
                 <motion.div

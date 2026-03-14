@@ -5,9 +5,13 @@ import { useLanguage } from "../contexts/LanguageContext";
 import {
   LEVEL_TARGETS,
   LEVEL_TARGETS_CRYSTAL,
+  LEVEL_TARGETS_FROZEN,
   LEVEL_TARGETS_INFERNO,
   LEVEL_TARGETS_JUNGLE,
+  LEVEL_TARGETS_LABYRINTH,
   LEVEL_TARGETS_NEON,
+  LEVEL_TARGETS_QUANTUM,
+  LEVEL_TARGETS_SHADOW,
   LEVEL_TARGETS_VOID,
   type LevelStar,
   type Universe,
@@ -146,24 +150,81 @@ const UNIVERSE_CONFIG = {
     borderLocked: "oklch(0.20 0.06 292)",
     titleIcon: "🌑",
   },
-  neon: {
-    bg: "neon-bg",
-    levelIcon: "⚡",
-    bossIcon: "🧬",
+  shadow: {
+    bg: "shadow-bg",
+    levelIcon: "🌫️",
+    bossIcon: "👁️",
     completedIcon: "✅",
     lockedIcon: "🔒",
     cellNormal:
-      "linear-gradient(135deg, oklch(0.14 0.08 160), oklch(0.10 0.06 175))",
+      "linear-gradient(135deg, oklch(0.16 0.10 285), oklch(0.10 0.07 290))",
     cellCompleted:
-      "linear-gradient(135deg, oklch(0.20 0.14 158), oklch(0.14 0.10 170))",
+      "linear-gradient(135deg, oklch(0.22 0.14 285), oklch(0.16 0.10 295))",
     cellBoss:
-      "linear-gradient(135deg, oklch(0.22 0.18 155), oklch(0.16 0.14 168))",
-    cellLocked: "oklch(0.10 0.04 165)",
-    borderNormal: "oklch(0.38 0.18 158)",
-    borderCompleted: "oklch(0.52 0.22 155)",
-    borderBoss: "oklch(0.65 0.26 152)",
-    borderLocked: "oklch(0.22 0.08 162)",
-    titleIcon: "⚡",
+      "linear-gradient(135deg, oklch(0.26 0.18 282), oklch(0.18 0.14 295))",
+    cellLocked: "oklch(0.10 0.05 288)",
+    borderNormal: "oklch(0.32 0.12 285)",
+    borderCompleted: "oklch(0.48 0.16 282)",
+    borderBoss: "oklch(0.58 0.22 280)",
+    borderLocked: "oklch(0.18 0.06 288)",
+    titleIcon: "🌫️",
+  },
+  quantum: {
+    bg: "quantum-bg",
+    levelIcon: "⚛️",
+    bossIcon: "🔮",
+    completedIcon: "✅",
+    lockedIcon: "🔒",
+    cellNormal:
+      "linear-gradient(135deg, oklch(0.20 0.16 220), oklch(0.14 0.11 215))",
+    cellCompleted:
+      "linear-gradient(135deg, oklch(0.26 0.20 218), oklch(0.18 0.15 212))",
+    cellBoss:
+      "linear-gradient(135deg, oklch(0.30 0.22 215), oklch(0.22 0.18 208))",
+    cellLocked: "oklch(0.12 0.08 218)",
+    borderNormal: "oklch(0.36 0.18 220)",
+    borderCompleted: "oklch(0.52 0.22 218)",
+    borderBoss: "oklch(0.65 0.26 215)",
+    borderLocked: "oklch(0.22 0.10 220)",
+    titleIcon: "⚛️",
+  },
+  labyrinth: {
+    bg: "labyrinth-bg",
+    levelIcon: "🔥",
+    bossIcon: "💀",
+    completedIcon: "✅",
+    lockedIcon: "🔒",
+    cellNormal:
+      "linear-gradient(135deg, oklch(0.20 0.16 15), oklch(0.14 0.12 10))",
+    cellCompleted:
+      "linear-gradient(135deg, oklch(0.28 0.20 15), oklch(0.20 0.16 10))",
+    cellBoss:
+      "linear-gradient(135deg, oklch(0.34 0.24 15), oklch(0.24 0.20 8))",
+    cellLocked: "oklch(0.14 0.08 12)",
+    borderNormal: "oklch(0.40 0.20 15)",
+    borderCompleted: "oklch(0.56 0.24 15)",
+    borderBoss: "oklch(0.68 0.28 12)",
+    borderLocked: "oklch(0.24 0.10 12)",
+    titleIcon: "🔥",
+  },
+  frozen: {
+    bg: "frozen-bg",
+    levelIcon: "❄️",
+    bossIcon: "🧊",
+    completedIcon: "✅",
+    lockedIcon: "🔒",
+    cellNormal:
+      "linear-gradient(135deg, oklch(0.22 0.12 215), oklch(0.16 0.09 220))",
+    cellCompleted:
+      "linear-gradient(135deg, oklch(0.28 0.16 212), oklch(0.22 0.12 218))",
+    cellBoss:
+      "linear-gradient(135deg, oklch(0.34 0.20 208), oklch(0.26 0.16 215))",
+    cellLocked: "oklch(0.14 0.06 218)",
+    borderNormal: "oklch(0.40 0.16 215)",
+    borderCompleted: "oklch(0.56 0.20 212)",
+    borderBoss: "oklch(0.68 0.24 208)",
+    borderLocked: "oklch(0.24 0.08 218)",
+    titleIcon: "❄️",
   },
 };
 
@@ -179,6 +240,14 @@ function getTargets(universe: Universe) {
       return LEVEL_TARGETS_VOID;
     case "neon":
       return LEVEL_TARGETS_NEON;
+    case "shadow":
+      return LEVEL_TARGETS_SHADOW;
+    case "quantum":
+      return LEVEL_TARGETS_QUANTUM;
+    case "labyrinth":
+      return LEVEL_TARGETS_LABYRINTH;
+    case "frozen":
+      return LEVEL_TARGETS_FROZEN;
     default:
       return LEVEL_TARGETS;
   }
@@ -191,7 +260,7 @@ export function LevelSelectScreen({
   onBack,
 }: LevelSelectScreenProps) {
   const { t } = useLanguage();
-  const cfg = UNIVERSE_CONFIG[universe];
+  const cfg = (UNIVERSE_CONFIG as any)[universe] ?? UNIVERSE_CONFIG.candy;
   const targets = getTargets(universe);
   const [savedLevel, setSavedLevel] = useState<number | null>(null);
 
@@ -226,7 +295,15 @@ export function LevelSelectScreen({
             ? "void-boss-glow"
             : universe === "neon"
               ? "neon-boss-glow"
-              : "boss-glow";
+              : universe === "shadow"
+                ? "shadow-boss-glow"
+                : universe === "quantum"
+                  ? "quantum-boss-glow"
+                  : universe === "labyrinth"
+                    ? "labyrinth-boss-glow"
+                    : universe === "frozen"
+                      ? "frozen-boss-glow"
+                      : "boss-glow";
 
   return (
     <motion.div

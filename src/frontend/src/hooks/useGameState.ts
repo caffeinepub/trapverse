@@ -6,8 +6,10 @@ import {
   type GamePhase,
   LEVEL_TARGETS,
   LEVEL_TARGETS_CRYSTAL,
+  LEVEL_TARGETS_FROZEN,
   LEVEL_TARGETS_INFERNO,
   LEVEL_TARGETS_JUNGLE,
+  LEVEL_TARGETS_LABYRINTH,
   LEVEL_TARGETS_NEON,
   LEVEL_TARGETS_QUANTUM,
   LEVEL_TARGETS_SHADOW,
@@ -88,6 +90,10 @@ function generateGrid(level: number, universe: Universe): Cell[] {
     bombCount = Math.round(totalCells * 0.35);
   } else if (universe === "quantum") {
     bombCount = Math.round(totalCells * 0.3);
+  } else if (universe === "labyrinth") {
+    bombCount = Math.round(totalCells * 0.4);
+  } else if (universe === "frozen") {
+    bombCount = Math.round(totalCells * 0.35);
   } else {
     // candy
     if (isBoss) {
@@ -190,6 +196,10 @@ function getTargets(universe: Universe) {
       return LEVEL_TARGETS_SHADOW;
     case "quantum":
       return LEVEL_TARGETS_QUANTUM;
+    case "labyrinth":
+      return LEVEL_TARGETS_LABYRINTH;
+    case "frozen":
+      return LEVEL_TARGETS_FROZEN;
     default:
       return LEVEL_TARGETS;
   }
@@ -205,6 +215,10 @@ export function useGameState(
   const isVoidBoss = universe === "void" && isBoss;
   const isShadowBoss = universe === "shadow" && isBoss;
   const isQuantumBoss = universe === "quantum" && isBoss;
+  const isLabyrinthBoss = universe === "labyrinth" && isBoss;
+  const isFrozenBoss = universe === "frozen" && isBoss;
+  const isFrozenUniverse = universe === "frozen";
+  const isLabyrinthUniverse = universe === "labyrinth";
   const gridSize = UNIVERSE_GRID_SIZE[universe];
   const targets = getTargets(universe);
   const target = targets[level - 1] ?? 300;
@@ -229,6 +243,7 @@ export function useGameState(
     if (save && save.burnTimeLeft !== null) return save.burnTimeLeft;
     return isInfernoBoss ? 40 : null;
   });
+
   // Void boss: darkened cells (indices)
   const [darkenedCells, setDarkenedCells] = useState<Set<number>>(
     () => new Set(),
@@ -261,6 +276,38 @@ export function useGameState(
   const [quantumFlashCountdown, setQuantumFlashCountdown] = useState<
     number | null
   >(isQuantumBoss ? 20 : null);
+
+  // Labyrinth universe: darkened cells
+  const [labyrinthDarkenedCells, setLabyrinthDarkenedCells] = useState<
+    Set<number>
+  >(() => new Set());
+  // Labyrinth boss: countdown to next row/col darkening
+  const [labyrinthBossCountdown, setLabyrinthBossCountdown] = useState<
+    number | null
+  >(isLabyrinthBoss ? 12 : null);
+  // Labyrinth boss: notification
+  const [showLabyrinthDarkenNotif, setShowLabyrinthDarkenNotif] =
+    useState(false);
+
+  // Frozen universe: cell states
+  const totalCells = gridSize * gridSize;
+  const [frozenCells, setFrozenCells] = useState<Set<number>>(() => {
+    if (isFrozenUniverse) {
+      return new Set(Array.from({ length: totalCells }, (_, i) => i));
+    }
+    return new Set();
+  });
+  const [meltedCells, setMeltedCells] = useState<Set<number>>(() => new Set());
+  // Frozen universe: 60s timer
+  const [frozenTimer, setFrozenTimer] = useState<number | null>(
+    isFrozenUniverse ? 60 : null,
+  );
+  // Frozen boss: countdown to next refreeze
+  const [frozenBossCountdown, setFrozenBossCountdown] = useState<number | null>(
+    isFrozenBoss ? 8 : null,
+  );
+  // Frozen boss: refreeze notification
+  const [showFrozenRefreezeNotif, setShowFrozenRefreezeNotif] = useState(false);
 
   const burnTickRef = useRef(0);
   const phaseRef = useRef<GamePhase>("playing");
@@ -323,6 +370,24 @@ export function useGameState(
       setQuantumRevealActive(false);
       setQuantumFlashCountdown(null);
     }
+    // Labyrinth reset
+    setLabyrinthDarkenedCells(new Set());
+    setLabyrinthBossCountdown(
+      universe === "labyrinth" && level === 21 ? 12 : null,
+    );
+    // Frozen reset
+    const gs = UNIVERSE_GRID_SIZE[universe];
+    const tc = gs * gs;
+    if (universe === "frozen") {
+      setFrozenCells(new Set(Array.from({ length: tc }, (_, i) => i)));
+      setFrozenTimer(60);
+      setFrozenBossCountdown(level === 21 ? 8 : null);
+    } else {
+      setFrozenCells(new Set());
+      setFrozenTimer(null);
+      setFrozenBossCountdown(null);
+    }
+    setMeltedCells(new Set());
   }, [level, universe]);
 
   // Quantum initial reveal: show board for 3 seconds then hide
@@ -344,7 +409,6 @@ export function useGameState(
       setBurnTimeLeft((prev) => {
         if (prev === null) return null;
         const next = prev - 1;
-        // Haptic warning when time is low
         if (next === 10 || next === 5 || next === 3) {
           Haptics.burnWarning();
         }
@@ -392,7 +456,6 @@ export function useGameState(
         if (prev === null) return null;
         const next = prev - 1;
         if (next <= 0) {
-          // Darken a random unrevealed safe cell
           setGrid((currentGrid) => {
             setDarkenedCells((currentDarkened) => {
               const candidates = currentGrid
@@ -413,7 +476,7 @@ export function useGameState(
             });
             return currentGrid;
           });
-          return 15; // reset countdown
+          return 15;
         }
         return next;
       });
@@ -433,7 +496,6 @@ export function useGameState(
         if (prev === null) return null;
         const next = prev - 1;
         if (next <= 0) {
-          // Reset all visible cells (vision shrinks)
           setVisibleCells(new Set());
           return 20;
         }
@@ -455,7 +517,6 @@ export function useGameState(
         if (prev === null) return null;
         const next = prev - 1;
         if (next <= 0) {
-          // Flash reveal for 2 seconds
           setQuantumRevealActive(true);
           setTimeout(() => setQuantumRevealActive(false), 2000);
           return 20;
@@ -466,6 +527,129 @@ export function useGameState(
 
     return () => clearInterval(interval);
   }, [isQuantumBoss, phase, isPaused]);
+
+  // Labyrinth boss: row/column darkening every 12s — stops when paused
+  useEffect(() => {
+    if (!isLabyrinthBoss) return;
+    if (phase !== "playing") return;
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      setLabyrinthBossCountdown((prev) => {
+        if (prev === null) return null;
+        const next = prev - 1;
+        if (next <= 0) {
+          // Pick random row or column and darken all unrevealed cells in it
+          const isRow = Math.random() < 0.5;
+          const lineIdx = Math.floor(Math.random() * gridSize);
+          setGrid((currentGrid) => {
+            setLabyrinthDarkenedCells((currentDark) => {
+              const newDark = new Set(currentDark);
+              for (let j = 0; j < gridSize; j++) {
+                const cellIdx = isRow
+                  ? lineIdx * gridSize + j
+                  : j * gridSize + lineIdx;
+                if (
+                  !currentGrid[cellIdx].revealed &&
+                  currentGrid[cellIdx].type !== "bomb" &&
+                  currentGrid[cellIdx].type !== "chain_bomb"
+                ) {
+                  newDark.add(cellIdx);
+                }
+              }
+              return newDark;
+            });
+            return currentGrid;
+          });
+          setShowLabyrinthDarkenNotif(true);
+          setTimeout(() => setShowLabyrinthDarkenNotif(false), 1800);
+          return 12;
+        }
+        return next;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isLabyrinthBoss, phase, isPaused, gridSize]);
+
+  // Frozen universe: countdown timer — stops when paused
+  useEffect(() => {
+    if (!isFrozenUniverse) return;
+    if (phase !== "playing") return;
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      setFrozenTimer((prev) => {
+        if (prev === null) return null;
+        const next = prev - 1;
+        if (next === 10 || next === 5 || next === 3) {
+          Haptics.burnWarning();
+        }
+        if (next <= 0) {
+          safeSetPhase("lost");
+          Haptics.explosion();
+          return 0;
+        }
+        return next;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isFrozenUniverse, phase, isPaused, safeSetPhase]);
+
+  // Frozen boss: refreeze revealed cells every 8s — stops when paused
+  useEffect(() => {
+    if (!isFrozenBoss) return;
+    if (phase !== "playing") return;
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      setFrozenBossCountdown((prev) => {
+        if (prev === null) return null;
+        const next = prev - 1;
+        if (next <= 0) {
+          // Pick 2-3 revealed safe cells and refreeze them
+          setGrid((currentGrid) => {
+            const revealedSafe = currentGrid
+              .map((c, i) => ({ c, i }))
+              .filter(
+                ({ c }) =>
+                  c.revealed && c.type !== "bomb" && c.type !== "chain_bomb",
+              );
+            if (revealedSafe.length === 0) return currentGrid;
+            const count = Math.min(
+              revealedSafe.length,
+              2 + Math.floor(Math.random() * 2),
+            );
+            // shuffle and pick
+            const shuffled = [...revealedSafe].sort(() => Math.random() - 0.5);
+            const picks = shuffled.slice(0, count);
+            const newGrid = [...currentGrid];
+            setFrozenCells((prev) => {
+              const next = new Set(prev);
+              for (const { i } of picks) {
+                next.add(i);
+                newGrid[i] = { ...newGrid[i], revealed: false };
+              }
+              return next;
+            });
+            setMeltedCells((prev) => {
+              const next = new Set(prev);
+              for (const { i } of picks) next.delete(i);
+              return next;
+            });
+            return newGrid;
+          });
+          setShowFrozenRefreezeNotif(true);
+          setTimeout(() => setShowFrozenRefreezeNotif(false), 1800);
+          return 8;
+        }
+        return next;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isFrozenBoss, phase, isPaused]);
 
   const resetGame = useCallback(() => {
     clearSave();
@@ -493,6 +677,24 @@ export function useGameState(
       setQuantumRevealActive(false);
       setQuantumFlashCountdown(null);
     }
+    // Labyrinth reset
+    setLabyrinthDarkenedCells(new Set());
+    setLabyrinthBossCountdown(
+      universe === "labyrinth" && level === 21 ? 12 : null,
+    );
+    // Frozen reset
+    const gs = UNIVERSE_GRID_SIZE[universe];
+    const tc = gs * gs;
+    if (universe === "frozen") {
+      setFrozenCells(new Set(Array.from({ length: tc }, (_, i) => i)));
+      setFrozenTimer(60);
+      setFrozenBossCountdown(level === 21 ? 8 : null);
+    } else {
+      setFrozenCells(new Set());
+      setFrozenTimer(null);
+      setFrozenBossCountdown(null);
+    }
+    setMeltedCells(new Set());
   }, [level, universe]);
 
   const triggerChainReaction = useCallback(
@@ -538,7 +740,6 @@ export function useGameState(
     [gridSize],
   );
 
-  // Neon boss: virus spread — when bomb explodes, all adjacent unrevealed cells also explode (BFS)
   const triggerVirusSpread = useCallback(
     (startIndex: number, currentGrid: Cell[]): Cell[] => {
       const newGrid = [...currentGrid];
@@ -551,7 +752,6 @@ export function useGameState(
         visited.add(idx);
         newGrid[idx] = { ...newGrid[idx], revealed: true };
 
-        // If it's a bomb (or chain_bomb), spread to all adjacent unrevealed cells
         if (
           newGrid[idx].type === "bomb" ||
           newGrid[idx].type === "chain_bomb"
@@ -600,17 +800,117 @@ export function useGameState(
     [gridSize],
   );
 
+  // Helper: apply labyrinth darkening after revealing a safe cell
+  const applyLabyrinthDarkening = useCallback(
+    (index: number, currentGrid: Cell[]) => {
+      if (!isLabyrinthUniverse) return;
+      const row = Math.floor(index / gridSize);
+      const col = index % gridSize;
+      // Collect unrevealed non-bomb neighbors
+      const neighbors: number[] = [];
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          if (dr === 0 && dc === 0) continue;
+          const nr = row + dr;
+          const nc = col + dc;
+          if (nr >= 0 && nr < gridSize && nc >= 0 && nc < gridSize) {
+            const nIdx = nr * gridSize + nc;
+            if (
+              !currentGrid[nIdx].revealed &&
+              currentGrid[nIdx].type !== "bomb" &&
+              currentGrid[nIdx].type !== "chain_bomb"
+            ) {
+              neighbors.push(nIdx);
+            }
+          }
+        }
+      }
+      if (neighbors.length === 0) return;
+      // Randomly darken 1-2 neighbors
+      const shuffled = [...neighbors].sort(() => Math.random() - 0.5);
+      const count = 1 + Math.floor(Math.random() * 2); // 1 or 2
+      const toDarken = shuffled.slice(0, Math.min(count, shuffled.length));
+      setLabyrinthDarkenedCells((prev) => {
+        const next = new Set(prev);
+        for (const idx of toDarken) next.add(idx);
+        return next;
+      });
+    },
+    [isLabyrinthUniverse, gridSize],
+  );
+
+  // Helper: un-darken labyrinth cells adjacent to a newly revealed cell
+  const undarkenLabyrinthNeighbors = useCallback(
+    (index: number) => {
+      if (!isLabyrinthUniverse) return;
+      const row = Math.floor(index / gridSize);
+      const col = index % gridSize;
+      setLabyrinthDarkenedCells((prev) => {
+        const next = new Set(prev);
+        for (let dr = -1; dr <= 1; dr++) {
+          for (let dc = -1; dc <= 1; dc++) {
+            if (dr === 0 && dc === 0) continue;
+            const nr = row + dr;
+            const nc = col + dc;
+            if (nr >= 0 && nr < gridSize && nc >= 0 && nc < gridSize) {
+              next.delete(nr * gridSize + nc);
+            }
+          }
+        }
+        return next;
+      });
+    },
+    [isLabyrinthUniverse, gridSize],
+  );
+
   const revealCell = useCallback(
     (index: number) => {
       if (phaseRef.current !== "playing") return;
       const cell = grid[index];
       if (!cell || cell.revealed) return;
       if (cell.type === "frozen") {
-        // Frozen tile: provide haptic + shake feedback, block reveal
+        // Crystal Storm frozen tile: provide haptic + shake feedback, block reveal
         Haptics.tap();
         setFrozenTappedIndex(index);
         setTimeout(() => setFrozenTappedIndex(null), 500);
         return;
+      }
+
+      // Labyrinth: darkened cells cannot be clicked
+      if (isLabyrinthUniverse && labyrinthDarkenedCells.has(index)) {
+        Haptics.tap();
+        setFrozenTappedIndex(index);
+        setTimeout(() => setFrozenTappedIndex(null), 500);
+        return;
+      }
+
+      // Frozen universe: double-tap mechanic
+      if (isFrozenUniverse) {
+        if (frozenCells.has(index)) {
+          // First tap: melt (move from frozen to melted)
+          playSound("tap");
+          Haptics.tap();
+          setFrozenCells((prev) => {
+            const next = new Set(prev);
+            next.delete(index);
+            return next;
+          });
+          setMeltedCells((prev) => {
+            const next = new Set(prev);
+            next.add(index);
+            return next;
+          });
+          return;
+        }
+        if (meltedCells.has(index)) {
+          // Second tap: remove from melted, fall through to normal reveal
+          setMeltedCells((prev) => {
+            const next = new Set(prev);
+            next.delete(index);
+            return next;
+          });
+          // fall through to normal reveal below
+        }
       }
 
       playSound("tap");
@@ -641,14 +941,12 @@ export function useGameState(
           setGrid((prev) =>
             prev.map((c, i) => (i === index ? { ...c, revealed: true } : c)),
           );
-          // Shadow: add to visible even for shielded bomb
           if (universe === "shadow") {
             setVisibleCells((prev) => addToVisible(index, prev));
           }
         } else {
           playSound("bomb");
           Haptics.explosion();
-          // Neon boss: virus spread
           if (universe === "neon" && isBoss) {
             setShowVirusNotification(true);
             setTimeout(() => setShowVirusNotification(false), 1800);
@@ -666,9 +964,13 @@ export function useGameState(
         }
       } else {
         // Safe cell
-        // Shadow: update visible cells
         if (universe === "shadow") {
           setVisibleCells((prev) => addToVisible(index, prev));
+        }
+        // Labyrinth: apply darkening to neighbors, un-darken adjacent cells
+        if (isLabyrinthUniverse) {
+          undarkenLabyrinthNeighbors(index);
+          applyLabyrinthDarkening(index, grid);
         }
 
         const multiplier = activePowerups.multiplier ? 2 : 1;
@@ -700,9 +1002,16 @@ export function useGameState(
       target,
       isBoss,
       universe,
+      isLabyrinthUniverse,
+      isFrozenUniverse,
+      labyrinthDarkenedCells,
+      frozenCells,
+      meltedCells,
       triggerChainReaction,
       triggerVirusSpread,
       addToVisible,
+      applyLabyrinthDarkening,
+      undarkenLabyrinthNeighbors,
       safeSetPhase,
     ],
   );
@@ -753,6 +1062,14 @@ export function useGameState(
     shadowBossCountdown,
     quantumRevealActive,
     quantumFlashCountdown,
+    labyrinthDarkenedCells,
+    labyrinthBossCountdown,
+    showLabyrinthDarkenNotif,
+    frozenCells,
+    meltedCells,
+    frozenTimer,
+    frozenBossCountdown,
+    showFrozenRefreezeNotif,
     revealCell,
     activatePowerup,
     resetGame,

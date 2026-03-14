@@ -545,3 +545,69 @@
 .neon-boss-glow {
   box-shadow: 0 0 24px oklch(0.62 0.26 155 / 0.7), 0 0 48px oklch(0.45 0.22 158 / 0.35);
 }
+
+/* =============================================
+   SHADOW DIMENSION
+   ============================================= */
+.shadow-bg {
+  background: radial-gradient(ellipse at 20% 10%, oklch(0.18 0.12 285) 0%, oklch(0.08 0.06 280) 50%, oklch(0.04 0.03 270) 100%);
+  min-height: 100vh;
+}
+
+.cell-face-down-shadow {
+  background: linear-gradient(135deg,
+    oklch(0.16 0.10 285) 0%,
+    oklch(0.10 0.07 290) 100%);
+  border: 1px solid oklch(0.26 0.12 285);
+  color: oklch(0.45 0.14 285);
+  box-shadow: 0 1px 4px oklch(0.05 0.05 285 / 0.8), inset 0 1px 0 oklch(0.32 0.12 285 / 0.3);
+}
+
+.cell-face-down-shadow:active {
+  transform: scale(0.94);
+}
+
+.cell-shadow-dark {
+  background: oklch(0.06 0.04 285) !important;
+  border: 1px solid oklch(0.14 0.07 285) !important;
+  box-shadow: none !important;
+}
+
+.progress-shadow {
+  background: linear-gradient(90deg, oklch(0.45 0.22 285), oklch(0.65 0.26 285));
+  background-size: 200% 100%;
+  animation: progress-shimmer 2.5s linear infinite;
+}
+
+/* =============================================
+   QUANTUM REALM
+   ============================================= */
+.quantum-bg {
+  background: radial-gradient(ellipse at 80% 20%, oklch(0.22 0.18 220) 0%, oklch(0.10 0.12 215) 50%, oklch(0.06 0.08 210) 100%);
+  min-height: 100vh;
+}
+
+.cell-face-down-quantum {
+  background: linear-gradient(135deg,
+    oklch(0.20 0.16 220) 0%,
+    oklch(0.14 0.11 215) 100%);
+  border: 1px solid oklch(0.34 0.18 220);
+  color: oklch(0.55 0.20 220);
+  box-shadow: 0 1px 4px oklch(0.06 0.08 220 / 0.8), inset 0 1px 0 oklch(0.42 0.18 220 / 0.3), 0 0 6px oklch(0.40 0.18 215 / 0.15);
+}
+
+.cell-face-down-quantum:active {
+  transform: scale(0.94);
+}
+
+.cell-quantum-flash {
+  background: oklch(0.30 0.20 200) !important;
+  border: 1px solid oklch(0.60 0.25 200) !important;
+  box-shadow: 0 0 12px oklch(0.55 0.22 205 / 0.5) !important;
+}
+
+.progress-quantum {
+  background: linear-gradient(90deg, oklch(0.50 0.22 220), oklch(0.70 0.26 200));
+  background-size: 200% 100%;
+  animation: progress-shimmer 2.5s linear infinite;
+}

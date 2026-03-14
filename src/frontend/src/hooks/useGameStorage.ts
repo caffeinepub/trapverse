@@ -16,6 +16,8 @@ const KEYS = {
   infernoLevelStars: "trapverse_inferno_level_stars",
   voidLevelStars: "trapverse_void_level_stars",
   neonLevelStars: "trapverse_neon_level_stars",
+  shadowLevelStars: "trapverse_shadow_level_stars",
+  quantumLevelStars: "trapverse_quantum_level_stars",
   powerups: "trapverse_powerups",
   quests: "trapverse_quests",
   questDate: "trapverse_quest_date",
@@ -321,6 +323,12 @@ export function useGameStorage() {
   const [neonLevelStars, setNeonLevelStarsState] = useState<LevelStar[]>(() =>
     loadLevelStars(KEYS.neonLevelStars),
   );
+  const [shadowLevelStars, setShadowLevelStarsState] = useState<LevelStar[]>(
+    () => loadLevelStars(KEYS.shadowLevelStars),
+  );
+  const [quantumLevelStars, setQuantumLevelStarsState] = useState<LevelStar[]>(
+    () => loadLevelStars(KEYS.quantumLevelStars),
+  );
   const [powerups, setPowerupsState] = useState<PowerupCounts>(loadPowerups);
   const [quests, setQuestsState] = useState<Quest[]>(loadQuests);
   const [achievements, setAchievementsState] =
@@ -386,6 +394,14 @@ export function useGameStorage() {
   );
   const setNeonLevelStars = useCallback(
     makeLevelStarsSetter(setNeonLevelStarsState, KEYS.neonLevelStars),
+    [],
+  );
+  const setShadowLevelStars = useCallback(
+    makeLevelStarsSetter(setShadowLevelStarsState, KEYS.shadowLevelStars),
+    [],
+  );
+  const setQuantumLevelStars = useCallback(
+    makeLevelStarsSetter(setQuantumLevelStarsState, KEYS.quantumLevelStars),
     [],
   );
 
@@ -506,6 +522,10 @@ export function useGameStorage() {
     setVoidLevelStars,
     neonLevelStars,
     setNeonLevelStars,
+    shadowLevelStars,
+    setShadowLevelStars,
+    quantumLevelStars,
+    setQuantumLevelStars,
     powerups,
     setPowerups,
     quests,

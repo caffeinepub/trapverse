@@ -28,7 +28,9 @@ export type Universe =
   | "crystal"
   | "inferno"
   | "void"
-  | "neon";
+  | "neon"
+  | "shadow"
+  | "quantum";
 
 export interface Cell {
   id: number;
@@ -112,6 +114,8 @@ export const UNIVERSE_GRID_SIZE: Record<Universe, number> = {
   inferno: 8,
   void: 9,
   neon: 10,
+  shadow: 9,
+  quantum: 8,
 };
 
 export const LEVEL_TARGETS = [
@@ -137,4 +141,12 @@ export const LEVEL_TARGETS_VOID = [
 export const LEVEL_TARGETS_NEON = [
   190, 220, 250, 283, 316, 352, 388, 426, 464, 504, 545, 587, 630, 675, 720,
   768, 816, 868, 924, 984, 1100,
+];
+export const LEVEL_TARGETS_SHADOW = [
+  170, 195, 220, 248, 276, 305, 334, 364, 395, 427, 460, 494, 528, 563, 599,
+  636, 674, 712, 752, 795, 900,
+];
+export const LEVEL_TARGETS_QUANTUM = [
+  140, 160, 180, 200, 220, 245, 270, 295, 320, 345, 370, 395, 420, 445, 470,
+  495, 520, 550, 580, 615, 700,
 ];

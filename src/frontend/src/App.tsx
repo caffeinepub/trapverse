@@ -60,6 +60,10 @@ function AppInner() {
     setVoidLevelStars,
     neonLevelStars,
     setNeonLevelStars,
+    shadowLevelStars,
+    setShadowLevelStars,
+    quantumLevelStars,
+    setQuantumLevelStars,
     powerups,
     setPowerups,
     quests,
@@ -96,6 +100,8 @@ function AppInner() {
         inferno: "Solar Inferno",
         void: "Void Abyss",
         neon: "Neon Circuit",
+        shadow: "Shadow Dimension",
+        quantum: "Quantum Realm",
       };
       (window as any).AndroidAudioBridge?.changeTheme(themeMap[universe]);
     } catch {
@@ -158,6 +164,12 @@ function AppInner() {
         break;
       case "neon":
         setNeonLevelStars(levelIndex, stars, true);
+        break;
+      case "shadow":
+        setShadowLevelStars(levelIndex, stars, true);
+        break;
+      case "quantum":
+        setQuantumLevelStars(levelIndex, stars, true);
         break;
     }
     updateLevelMutation.mutate({ level: currentLevel, stars, completed: true });
@@ -231,6 +243,12 @@ function AppInner() {
     const neonBossDone =
       neonLevelStars[20]?.completed ||
       (currentUniverse === "neon" && isBoss && stars > 0);
+    const shadowBossDone =
+      shadowLevelStars[20]?.completed ||
+      (currentUniverse === "shadow" && isBoss && stars > 0);
+    const quantumBossDone =
+      quantumLevelStars[20]?.completed ||
+      (currentUniverse === "quantum" && isBoss && stars > 0);
     const uniqueBossCount = [
       candyBossDone,
       jungleBossDone,
@@ -238,6 +256,8 @@ function AppInner() {
       infernoBossDone,
       voidBossDone,
       neonBossDone,
+      shadowBossDone,
+      quantumBossDone,
     ].filter(Boolean).length;
     updateAchievementProgress("boss_all", uniqueBossCount);
     updateAchievementProgress("three_stars", newThreeStars);
@@ -256,7 +276,9 @@ function AppInner() {
       crystalBossDone &&
       infernoBossDone &&
       voidBossDone &&
-      neonBossDone;
+      neonBossDone &&
+      shadowBossDone &&
+      quantumBossDone;
     if (allBossesBeaten) {
       updateAchievementProgress("all_universes", 6);
     }
@@ -326,6 +348,10 @@ function AppInner() {
         return voidLevelStars;
       case "neon":
         return neonLevelStars;
+      case "shadow":
+        return shadowLevelStars;
+      case "quantum":
+        return quantumLevelStars;
       default:
         return levelStars;
     }
@@ -368,6 +394,9 @@ function AppInner() {
                 crystalStars={crystalLevelStars}
                 infernoStars={infernoLevelStars}
                 voidStars={voidLevelStars}
+                neonStars={neonLevelStars}
+                shadowStars={shadowLevelStars}
+                quantumStars={quantumLevelStars}
               />
             </motion.div>
           )}

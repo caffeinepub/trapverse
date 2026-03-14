@@ -94,6 +94,20 @@ const UNIVERSE_CONFETTI_COLORS: Record<Universe, string[]> = {
     "oklch(0.90 0.22 80)",
     "oklch(0.70 0.28 25)",
   ],
+  shadow: [
+    "oklch(0.55 0.20 285)",
+    "oklch(0.40 0.16 300)",
+    "oklch(0.70 0.14 285)",
+    "oklch(0.30 0.12 310)",
+    "oklch(0.80 0.10 290)",
+  ],
+  quantum: [
+    "oklch(0.70 0.26 220)",
+    "oklch(0.60 0.24 200)",
+    "oklch(0.80 0.20 215)",
+    "oklch(0.85 0.18 195)",
+    "oklch(0.65 0.28 210)",
+  ],
 };
 
 const CONFETTI_SEEDS = [
@@ -309,6 +323,10 @@ export function GameBoardScreen({
     darkenedCells,
     voidDarkenCountdown,
     showVirusNotification,
+    visibleCells,
+    shadowBossCountdown,
+    quantumRevealActive,
+    quantumFlashCountdown,
     revealCell,
     activatePowerup,
     resetGame,
@@ -582,6 +600,64 @@ export function GameBoardScreen({
         )}
       </AnimatePresence>
 
+      {/* Shadow Boss Vision Shrink Countdown */}
+      {universe === "shadow" &&
+        isBoss &&
+        shadowBossCountdown !== null &&
+        phase === "playing" && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-2 px-4 py-2 rounded-2xl border flex items-center justify-between"
+            style={{
+              background: "oklch(0.12 0.08 285 / 0.8)",
+              borderColor: "oklch(0.38 0.16 285)",
+            }}
+          >
+            <span
+              className="text-xs font-display font-bold"
+              style={{ color: "oklch(0.72 0.18 285)" }}
+            >
+              🌫️ {t("game.shadowShrink")}
+            </span>
+            <span
+              className="font-display font-extrabold text-lg"
+              style={{ color: "oklch(0.80 0.20 285)" }}
+            >
+              {shadowBossCountdown}s
+            </span>
+          </motion.div>
+        )}
+
+      {/* Quantum Boss Flash Countdown */}
+      {universe === "quantum" &&
+        isBoss &&
+        quantumFlashCountdown !== null &&
+        phase === "playing" && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-2 px-4 py-2 rounded-2xl border flex items-center justify-between"
+            style={{
+              background: "oklch(0.14 0.12 220 / 0.8)",
+              borderColor: "oklch(0.45 0.20 218)",
+            }}
+          >
+            <span
+              className="text-xs font-display font-bold"
+              style={{ color: "oklch(0.76 0.20 220)" }}
+            >
+              ⚛️ {t("game.quantumFlash")}
+            </span>
+            <span
+              className="font-display font-extrabold text-lg"
+              style={{ color: "oklch(0.84 0.22 218)" }}
+            >
+              {quantumFlashCountdown}s
+            </span>
+          </motion.div>
+        )}
+
       {/* Score HUD */}
       <div className="mb-3 bg-card/60 rounded-2xl px-4 py-3 border border-border">
         <div className="flex justify-between items-center mb-2">
@@ -669,6 +745,12 @@ export function GameBoardScreen({
           const isDisguised = !cell.revealed && !!cell.disguisedAs;
           const isShaking = frozenTappedIndex === i;
           const isDarkened = !cell.revealed && darkenedCells.has(i);
+          // Shadow: cell is dark if not in visibleCells and not revealed
+          const isShadowDark =
+            universe === "shadow" && !cell.revealed && !visibleCells.has(i);
+          // Quantum: show cell type icon when reveal is active
+          const showQuantumReveal =
+            universe === "quantum" && !cell.revealed && quantumRevealActive;
 
           return (
             <motion.button
@@ -773,6 +855,35 @@ export function GameBoardScreen({
                   transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
                 >
                   <span className="text-lg">🌑</span>
+                </motion.div>
+              )}
+              {isShadowDark && !cell.revealed && (
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center"
+                  animate={{ opacity: [0.3, 0.6, 0.3] }}
+                  transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
+                >
+                  <span className="text-[10px] opacity-50">?</span>
+                </motion.div>
+              )}
+              {showQuantumReveal && (
+                <motion.div
+                  className="absolute inset-0 flex flex-col items-center justify-center cell-quantum-flash"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.85 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <span
+                    className={
+                      gridSize >= 7
+                        ? "text-base leading-none"
+                        : gridSize === 6
+                          ? "text-lg leading-none"
+                          : "text-xl leading-none"
+                    }
+                  >
+                    {CELL_ICONS[cell.type]}
+                  </span>
                 </motion.div>
               )}
               {!cell.revealed && !isFrozen && !isDarkened && warning && (

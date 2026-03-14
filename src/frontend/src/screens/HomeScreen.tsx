@@ -32,6 +32,9 @@ interface HomeScreenProps {
   crystalStars: LevelStar[];
   infernoStars: LevelStar[];
   voidStars: LevelStar[];
+  neonStars: LevelStar[];
+  shadowStars: LevelStar[];
+  quantumStars?: LevelStar[];
 }
 
 const particles = [
@@ -165,6 +168,8 @@ export function HomeScreen({
   crystalStars,
   infernoStars,
   voidStars,
+  neonStars,
+  shadowStars,
 }: HomeScreenProps) {
   const { t, lang, setLang, languages } = useLanguage();
   const [showLangModal, setShowLangModal] = useState(false);
@@ -174,6 +179,8 @@ export function HomeScreen({
   const infernoUnlocked = crystalStars[20]?.completed === true;
   const voidUnlocked = infernoStars[20]?.completed === true;
   const neonUnlocked = voidStars[20]?.completed === true;
+  const shadowUnlocked = neonStars[20]?.completed === true;
+  const quantumUnlocked = shadowStars[20]?.completed === true;
 
   const lockedLabel = t("home.locked");
 
@@ -715,6 +722,169 @@ export function HomeScreen({
                     duration: 1.5,
                     repeat: Number.POSITIVE_INFINITY,
                     delay: 1.5,
+                  }}
+                >
+                  →
+                </motion.div>
+              )}
+            </div>
+          </motion.button>
+          {/* Shadow Dimension */}
+          <motion.button
+            type="button"
+            data-ocid="home.shadow_button"
+            className={`w-full relative rounded-3xl p-5 overflow-hidden text-left transition-opacity ${shadowUnlocked ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
+            style={{
+              background:
+                "linear-gradient(135deg, oklch(0.14 0.10 285) 0%, oklch(0.08 0.06 290) 100%)",
+              border: "1.5px solid oklch(0.32 0.14 285)",
+            }}
+            onClick={() => {
+              if (shadowUnlocked) onSelectUniverse("shadow");
+            }}
+            whileHover={shadowUnlocked ? { scale: 1.01 } : {}}
+            whileTap={shadowUnlocked ? { scale: 0.97 } : {}}
+          >
+            {!shadowUnlocked && <LockOverlay label={lockedLabel} />}
+            <div
+              className="absolute inset-0 opacity-25"
+              style={{
+                background:
+                  "radial-gradient(ellipse at 30% 50%, oklch(0.42 0.20 285) 0%, transparent 55%), radial-gradient(ellipse at 70% 80%, oklch(0.28 0.14 300) 0%, transparent 40%)",
+              }}
+            />
+            {/* Star field effect */}
+            <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+              {["ss1", "ss2", "ss3", "ss4", "ss5"].map((sid, si) => (
+                <motion.div
+                  key={sid}
+                  className="absolute rounded-full"
+                  style={{
+                    width: si % 2 === 0 ? 1 : 2,
+                    height: si % 2 === 0 ? 1 : 2,
+                    background: "oklch(0.85 0.08 285)",
+                    top: `${8 + si * 16}%`,
+                    right: `${8 + (si % 3) * 12}%`,
+                  }}
+                  animate={{ opacity: [0.2, 0.9, 0.2] }}
+                  transition={{
+                    duration: 2 + si * 0.4,
+                    repeat: Number.POSITIVE_INFINITY,
+                    delay: si * 0.4,
+                  }}
+                />
+              ))}
+            </div>
+            <CardShimmer delay={6} />
+            <div className="relative flex items-center gap-4">
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+                style={{
+                  background:
+                    "linear-gradient(135deg, oklch(0.24 0.16 285), oklch(0.14 0.10 300))",
+                  boxShadow: "0 0 10px oklch(0.35 0.18 285 / 0.4)",
+                }}
+              >
+                🌫️
+              </div>
+              <div className="flex-1">
+                <h2
+                  className="font-display font-bold text-lg"
+                  style={{ color: "oklch(0.80 0.16 285)" }}
+                >
+                  {t("home.universe.shadow.name")}
+                </h2>
+                <p
+                  className="text-xs"
+                  style={{ color: "oklch(0.48 0.10 290)" }}
+                >
+                  {t("home.universe.shadow.desc")}
+                </p>
+              </div>
+              {shadowUnlocked && (
+                <motion.div
+                  className="text-xl"
+                  style={{ color: "oklch(0.60 0.16 285)" }}
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Number.POSITIVE_INFINITY,
+                    delay: 1.8,
+                  }}
+                >
+                  →
+                </motion.div>
+              )}
+            </div>
+          </motion.button>
+
+          {/* Quantum Realm */}
+          <motion.button
+            type="button"
+            data-ocid="home.quantum_button"
+            className={`w-full relative rounded-3xl p-5 overflow-hidden text-left transition-opacity ${quantumUnlocked ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
+            style={{
+              background:
+                "linear-gradient(135deg, oklch(0.14 0.14 220) 0%, oklch(0.10 0.10 210) 100%)",
+              border: "1.5px solid oklch(0.42 0.20 218)",
+            }}
+            onClick={() => {
+              if (quantumUnlocked) onSelectUniverse("quantum");
+            }}
+            whileHover={quantumUnlocked ? { scale: 1.01 } : {}}
+            whileTap={quantumUnlocked ? { scale: 0.97 } : {}}
+          >
+            {!quantumUnlocked && <LockOverlay label={lockedLabel} />}
+            <div
+              className="absolute inset-0 opacity-25"
+              style={{
+                background:
+                  "radial-gradient(ellipse at 70% 30%, oklch(0.58 0.26 220) 0%, transparent 50%), radial-gradient(ellipse at 20% 70%, oklch(0.44 0.22 200) 0%, transparent 45%)",
+              }}
+            />
+            {/* Quantum wave effect */}
+            <div
+              className="absolute inset-0 opacity-8 pointer-events-none"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle at 50% 50%, oklch(0.55 0.24 215 / 0.15) 0%, transparent 60%)",
+              }}
+            />
+            <CardShimmer delay={7} />
+            <div className="relative flex items-center gap-4">
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+                style={{
+                  background:
+                    "linear-gradient(135deg, oklch(0.38 0.22 220), oklch(0.26 0.16 210))",
+                  boxShadow: "0 0 12px oklch(0.52 0.24 218 / 0.5)",
+                }}
+              >
+                ⚛️
+              </div>
+              <div className="flex-1">
+                <h2
+                  className="font-display font-bold text-lg"
+                  style={{ color: "oklch(0.84 0.20 220)" }}
+                >
+                  {t("home.universe.quantum.name")}
+                </h2>
+                <p
+                  className="text-xs"
+                  style={{ color: "oklch(0.50 0.14 218)" }}
+                >
+                  {t("home.universe.quantum.desc")}
+                </p>
+              </div>
+              {quantumUnlocked && (
+                <motion.div
+                  className="text-xl"
+                  style={{ color: "oklch(0.68 0.22 218)" }}
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Number.POSITIVE_INFINITY,
+                    delay: 2.1,
                   }}
                 >
                   →

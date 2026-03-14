@@ -9,6 +9,8 @@ import {
   LEVEL_TARGETS_INFERNO,
   LEVEL_TARGETS_JUNGLE,
   LEVEL_TARGETS_NEON,
+  LEVEL_TARGETS_QUANTUM,
+  LEVEL_TARGETS_SHADOW,
   LEVEL_TARGETS_VOID,
   UNIVERSE_GRID_SIZE,
   type Universe,
@@ -82,6 +84,10 @@ function generateGrid(level: number, universe: Universe): Cell[] {
     bombCount = Math.round(totalCells * 0.35);
   } else if (universe === "neon") {
     bombCount = Math.round(totalCells * 0.4);
+  } else if (universe === "shadow") {
+    bombCount = Math.round(totalCells * 0.35);
+  } else if (universe === "quantum") {
+    bombCount = Math.round(totalCells * 0.3);
   } else {
     // candy
     if (isBoss) {
@@ -180,6 +186,10 @@ function getTargets(universe: Universe) {
       return LEVEL_TARGETS_VOID;
     case "neon":
       return LEVEL_TARGETS_NEON;
+    case "shadow":
+      return LEVEL_TARGETS_SHADOW;
+    case "quantum":
+      return LEVEL_TARGETS_QUANTUM;
     default:
       return LEVEL_TARGETS;
   }
@@ -193,6 +203,8 @@ export function useGameState(
   const isBoss = level === 21;
   const isInfernoBoss = universe === "inferno" && isBoss;
   const isVoidBoss = universe === "void" && isBoss;
+  const isShadowBoss = universe === "shadow" && isBoss;
+  const isQuantumBoss = universe === "quantum" && isBoss;
   const gridSize = UNIVERSE_GRID_SIZE[universe];
   const targets = getTargets(universe);
   const target = targets[level - 1] ?? 300;
@@ -231,6 +243,25 @@ export function useGameState(
   const [frozenTappedIndex, setFrozenTappedIndex] = useState<number | null>(
     null,
   );
+
+  // Shadow universe: visible cells (cells that have been lit up)
+  const [visibleCells, setVisibleCells] = useState<Set<number>>(
+    () => new Set(),
+  );
+  // Shadow boss: countdown to vision shrink
+  const [shadowBossCountdown, setShadowBossCountdown] = useState<number | null>(
+    isShadowBoss ? 20 : null,
+  );
+
+  // Quantum universe: reveal active (show all cells briefly)
+  const [quantumRevealActive, setQuantumRevealActive] = useState<boolean>(
+    universe === "quantum",
+  );
+  // Quantum boss: flash countdown
+  const [quantumFlashCountdown, setQuantumFlashCountdown] = useState<
+    number | null
+  >(isQuantumBoss ? 20 : null);
+
   const burnTickRef = useRef(0);
   const phaseRef = useRef<GamePhase>("playing");
   const prevBurnTimeRef = useRef<number | null>(isInfernoBoss ? 40 : null);
@@ -281,7 +312,27 @@ export function useGameState(
       universe === "inferno" && level === 21 ? 40 : null;
     burnTickRef.current = 0;
     voidTickRef.current = 0;
+    // Shadow reset
+    setVisibleCells(new Set());
+    setShadowBossCountdown(universe === "shadow" && level === 21 ? 20 : null);
+    // Quantum reset: start with reveal active for 3 seconds
+    if (universe === "quantum") {
+      setQuantumRevealActive(true);
+      setQuantumFlashCountdown(level === 21 ? 20 : null);
+    } else {
+      setQuantumRevealActive(false);
+      setQuantumFlashCountdown(null);
+    }
   }, [level, universe]);
+
+  // Quantum initial reveal: show board for 3 seconds then hide
+  useEffect(() => {
+    if (universe !== "quantum") return;
+    const timer = setTimeout(() => {
+      setQuantumRevealActive(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [universe]);
 
   // Inferno boss burn timer — stops when paused
   useEffect(() => {
@@ -371,6 +422,51 @@ export function useGameState(
     return () => clearInterval(interval);
   }, [isVoidBoss, phase, isPaused]);
 
+  // Shadow boss: vision shrink countdown — stops when paused
+  useEffect(() => {
+    if (!isShadowBoss) return;
+    if (phase !== "playing") return;
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      setShadowBossCountdown((prev) => {
+        if (prev === null) return null;
+        const next = prev - 1;
+        if (next <= 0) {
+          // Reset all visible cells (vision shrinks)
+          setVisibleCells(new Set());
+          return 20;
+        }
+        return next;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isShadowBoss, phase, isPaused]);
+
+  // Quantum boss: flash countdown — stops when paused
+  useEffect(() => {
+    if (!isQuantumBoss) return;
+    if (phase !== "playing") return;
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      setQuantumFlashCountdown((prev) => {
+        if (prev === null) return null;
+        const next = prev - 1;
+        if (next <= 0) {
+          // Flash reveal for 2 seconds
+          setQuantumRevealActive(true);
+          setTimeout(() => setQuantumRevealActive(false), 2000);
+          return 20;
+        }
+        return next;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isQuantumBoss, phase, isPaused]);
+
   const resetGame = useCallback(() => {
     clearSave();
     setGrid(generateGrid(level, universe));
@@ -385,6 +481,18 @@ export function useGameState(
       universe === "inferno" && level === 21 ? 40 : null;
     burnTickRef.current = 0;
     voidTickRef.current = 0;
+    // Shadow reset
+    setVisibleCells(new Set());
+    setShadowBossCountdown(universe === "shadow" && level === 21 ? 20 : null);
+    // Quantum reset
+    if (universe === "quantum") {
+      setQuantumRevealActive(true);
+      setQuantumFlashCountdown(level === 21 ? 20 : null);
+      setTimeout(() => setQuantumRevealActive(false), 3000);
+    } else {
+      setQuantumRevealActive(false);
+      setQuantumFlashCountdown(null);
+    }
   }, [level, universe]);
 
   const triggerChainReaction = useCallback(
@@ -470,6 +578,28 @@ export function useGameState(
     [gridSize],
   );
 
+  // Helper: add cell + all 8 neighbors to visibleCells
+  const addToVisible = useCallback(
+    (index: number, currentVisible: Set<number>): Set<number> => {
+      const newVisible = new Set(currentVisible);
+      newVisible.add(index);
+      const row = Math.floor(index / gridSize);
+      const col = index % gridSize;
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          if (dr === 0 && dc === 0) continue;
+          const nr = row + dr;
+          const nc = col + dc;
+          if (nr >= 0 && nr < gridSize && nc >= 0 && nc < gridSize) {
+            newVisible.add(nr * gridSize + nc);
+          }
+        }
+      }
+      return newVisible;
+    },
+    [gridSize],
+  );
+
   const revealCell = useCallback(
     (index: number) => {
       if (phaseRef.current !== "playing") return;
@@ -511,6 +641,10 @@ export function useGameState(
           setGrid((prev) =>
             prev.map((c, i) => (i === index ? { ...c, revealed: true } : c)),
           );
+          // Shadow: add to visible even for shielded bomb
+          if (universe === "shadow") {
+            setVisibleCells((prev) => addToVisible(index, prev));
+          }
         } else {
           playSound("bomb");
           Haptics.explosion();
@@ -531,6 +665,12 @@ export function useGameState(
           safeSetPhase("lost");
         }
       } else {
+        // Safe cell
+        // Shadow: update visible cells
+        if (universe === "shadow") {
+          setVisibleCells((prev) => addToVisible(index, prev));
+        }
+
         const multiplier = activePowerups.multiplier ? 2 : 1;
         const points = CELL_POINTS[cell.type] * multiplier;
         playSound("collect");
@@ -562,6 +702,7 @@ export function useGameState(
       universe,
       triggerChainReaction,
       triggerVirusSpread,
+      addToVisible,
       safeSetPhase,
     ],
   );
@@ -608,6 +749,10 @@ export function useGameState(
     darkenedCells,
     voidDarkenCountdown,
     showVirusNotification,
+    visibleCells,
+    shadowBossCountdown,
+    quantumRevealActive,
+    quantumFlashCountdown,
     revealCell,
     activatePowerup,
     resetGame,

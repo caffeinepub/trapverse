@@ -15,6 +15,9 @@ interface LoginRewardInfo {
 interface LoginRewardPopupProps {
   info: LoginRewardInfo;
   onClaim: () => void;
+  forceShow?: boolean;
+  alreadyClaimed?: boolean;
+  onClose?: () => void;
 }
 
 const DAY_REWARDS = [
@@ -27,10 +30,16 @@ const DAY_REWARDS = [
   { coins: 100, powerup: "🛡️" },
 ];
 
-export function LoginRewardPopup({ info, onClaim }: LoginRewardPopupProps) {
+export function LoginRewardPopup({
+  info,
+  onClaim,
+  forceShow = false,
+  alreadyClaimed = false,
+  onClose,
+}: LoginRewardPopupProps) {
   const { t } = useLanguage();
 
-  if (!info.shouldShow) return null;
+  if (!info.shouldShow && !forceShow) return null;
 
   const rewardText = info.reward.powerup
     ? `${info.reward.powerup === "detector" ? "🔍" : info.reward.powerup === "multiplier" ? "✖️" : "🛡️"} x1`
@@ -45,6 +54,7 @@ export function LoginRewardPopup({ info, onClaim }: LoginRewardPopupProps) {
         className="fixed inset-0 z-50 flex items-center justify-center px-6"
         style={{ background: "oklch(0.05 0.03 280 / 0.88)" }}
         data-ocid="login_reward.dialog"
+        onClick={alreadyClaimed ? onClose : undefined}
       >
         <motion.div
           initial={{ scale: 0.8, y: 40 }}
@@ -56,10 +66,11 @@ export function LoginRewardPopup({ info, onClaim }: LoginRewardPopupProps) {
             background: "oklch(0.14 0.06 280)",
             borderColor: "oklch(0.30 0.10 280)",
           }}
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Title */}
           <div className="text-center mb-6">
-            <div className="text-5xl mb-3">🎁</div>
+            <div className="text-5xl mb-3">{alreadyClaimed ? "✅" : "🎁"}</div>
             <h2 className="font-display font-bold text-xl text-foreground">
               {t("loginReward.title")}
             </h2>
@@ -73,26 +84,30 @@ export function LoginRewardPopup({ info, onClaim }: LoginRewardPopupProps) {
             {Array.from({ length: 7 }, (_, i) => {
               const dayNum = i + 1;
               const isCurrent = dayNum === info.day;
-              const isPast = dayNum < info.day;
+              const isPast =
+                dayNum < info.day || (dayNum === info.day && alreadyClaimed);
               const dayReward = DAY_REWARDS[i];
               return (
                 <div key={dayNum} className="flex flex-col items-center gap-1">
                   <div
                     className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold transition-all"
                     style={{
-                      background: isCurrent
-                        ? "linear-gradient(135deg, oklch(0.65 0.22 75), oklch(0.55 0.18 75))"
-                        : isPast
-                          ? "oklch(0.22 0.06 148)"
-                          : "oklch(0.18 0.04 280)",
-                      color: isCurrent
-                        ? "white"
-                        : isPast
-                          ? "oklch(0.55 0.10 148)"
-                          : "oklch(0.45 0.04 280)",
-                      border: isCurrent
-                        ? "2px solid oklch(0.75 0.22 75)"
-                        : "1px solid transparent",
+                      background:
+                        isCurrent && !alreadyClaimed
+                          ? "linear-gradient(135deg, oklch(0.65 0.22 75), oklch(0.55 0.18 75))"
+                          : isPast
+                            ? "oklch(0.22 0.06 148)"
+                            : "oklch(0.18 0.04 280)",
+                      color:
+                        isCurrent && !alreadyClaimed
+                          ? "white"
+                          : isPast
+                            ? "oklch(0.55 0.10 148)"
+                            : "oklch(0.45 0.04 280)",
+                      border:
+                        isCurrent && !alreadyClaimed
+                          ? "2px solid oklch(0.75 0.22 75)"
+                          : "1px solid transparent",
                     }}
                   >
                     {isPast ? "✓" : dayNum}
@@ -112,40 +127,69 @@ export function LoginRewardPopup({ info, onClaim }: LoginRewardPopupProps) {
           <div
             className="rounded-2xl p-4 mb-5 text-center border"
             style={{
-              background: "oklch(0.18 0.08 75 / 0.3)",
-              borderColor: "oklch(0.45 0.16 75)",
+              background: alreadyClaimed
+                ? "oklch(0.16 0.04 280 / 0.3)"
+                : "oklch(0.18 0.08 75 / 0.3)",
+              borderColor: alreadyClaimed
+                ? "oklch(0.28 0.05 280)"
+                : "oklch(0.45 0.16 75)",
             }}
           >
             <p
               className="text-xs font-semibold mb-1"
-              style={{ color: "oklch(0.70 0.12 75)" }}
+              style={{
+                color: alreadyClaimed
+                  ? "oklch(0.45 0.05 280)"
+                  : "oklch(0.70 0.12 75)",
+              }}
             >
               {t("loginReward.reward")}
             </p>
             <p
               className="font-display font-extrabold text-2xl"
-              style={{ color: "oklch(0.88 0.22 75)" }}
+              style={{
+                color: alreadyClaimed
+                  ? "oklch(0.50 0.05 280)"
+                  : "oklch(0.88 0.22 75)",
+              }}
             >
               {rewardText}
             </p>
           </div>
 
-          {/* Claim button */}
-          <motion.button
-            type="button"
-            data-ocid="login_reward.claim_button"
-            whileTap={{ scale: 0.95 }}
-            onClick={onClaim}
-            className="w-full py-4 rounded-2xl font-display font-bold text-lg"
-            style={{
-              background:
-                "linear-gradient(135deg, oklch(0.60 0.22 75), oklch(0.50 0.18 75))",
-              color: "white",
-              minHeight: 56,
-            }}
-          >
-            {t("loginReward.claim")} {rewardText}
-          </motion.button>
+          {/* Action button */}
+          {alreadyClaimed ? (
+            <motion.button
+              type="button"
+              data-ocid="login_reward.close_button"
+              whileTap={{ scale: 0.95 }}
+              onClick={onClose}
+              className="w-full py-4 rounded-2xl font-display font-bold text-lg"
+              style={{
+                background: "oklch(0.22 0.06 280)",
+                color: "oklch(0.55 0.05 280)",
+                minHeight: 56,
+              }}
+            >
+              {t("loginReward.claimed")}
+            </motion.button>
+          ) : (
+            <motion.button
+              type="button"
+              data-ocid="login_reward.claim_button"
+              whileTap={{ scale: 0.95 }}
+              onClick={onClaim}
+              className="w-full py-4 rounded-2xl font-display font-bold text-lg"
+              style={{
+                background:
+                  "linear-gradient(135deg, oklch(0.60 0.22 75), oklch(0.50 0.18 75))",
+                color: "white",
+                minHeight: 56,
+              }}
+            >
+              {t("loginReward.claim")} {rewardText}
+            </motion.button>
+          )}
         </motion.div>
       </motion.div>
     </AnimatePresence>

@@ -37,6 +37,7 @@ const CELL_ICONS: Record<CellType, string> = {
   bomb: "💣",
   chain_bomb: "⛓️💣",
   frozen: "🧊",
+  dark: "🌑",
 };
 
 const CELL_POINTS_LABEL: Record<CellType, string> = {
@@ -47,6 +48,7 @@ const CELL_POINTS_LABEL: Record<CellType, string> = {
   bomb: "💥",
   chain_bomb: "💥💥",
   frozen: "—",
+  dark: "—",
 };
 
 const UNIVERSE_CONFETTI_COLORS: Record<Universe, string[]> = {
@@ -77,6 +79,20 @@ const UNIVERSE_CONFETTI_COLORS: Record<Universe, string[]> = {
     "oklch(0.70 0.26 30)",
     "oklch(0.90 0.22 55)",
     "oklch(0.65 0.28 15)",
+  ],
+  void: [
+    "oklch(0.62 0.22 285)",
+    "oklch(0.45 0.18 300)",
+    "oklch(0.78 0.16 285)",
+    "oklch(0.35 0.14 310)",
+    "oklch(0.85 0.12 290)",
+  ],
+  neon: [
+    "oklch(0.75 0.28 155)",
+    "oklch(0.65 0.26 330)",
+    "oklch(0.78 0.24 200)",
+    "oklch(0.90 0.22 80)",
+    "oklch(0.70 0.28 25)",
   ],
 };
 
@@ -290,6 +306,9 @@ export function GameBoardScreen({
     starsEarned,
     burnTimeLeft,
     frozenTappedIndex,
+    darkenedCells,
+    voidDarkenCountdown,
+    showVirusNotification,
     revealCell,
     activatePowerup,
     resetGame,
@@ -334,7 +353,11 @@ export function GameBoardScreen({
         ? "crystal-bg"
         : universe === "inferno"
           ? "inferno-bg"
-          : "candy-bg";
+          : universe === "void"
+            ? "void-bg"
+            : universe === "neon"
+              ? "neon-bg"
+              : "candy-bg";
   const progressClass =
     universe === "jungle"
       ? "progress-jungle"
@@ -342,7 +365,11 @@ export function GameBoardScreen({
         ? "progress-crystal"
         : universe === "inferno"
           ? "progress-inferno"
-          : "progress-candy";
+          : universe === "void"
+            ? "progress-void"
+            : universe === "neon"
+              ? "progress-neon"
+              : "progress-candy";
   const progressPct = Math.min(100, Math.round((score / target) * 100));
   const coinsEarned =
     starsEarned === 3
@@ -361,7 +388,11 @@ export function GameBoardScreen({
         ? t("game.boss.crystal")
         : universe === "inferno"
           ? t("game.boss.inferno")
-          : t("game.boss.candy");
+          : universe === "void"
+            ? t("game.boss.void")
+            : universe === "neon"
+              ? t("game.boss.neon")
+              : t("game.boss.candy");
 
   const levelEmoji =
     universe === "jungle"
@@ -370,7 +401,11 @@ export function GameBoardScreen({
         ? "💎"
         : universe === "inferno"
           ? "🔥"
-          : "🍭";
+          : universe === "void"
+            ? "🌑"
+            : universe === "neon"
+              ? "⚡"
+              : "🍭";
   const levelLabel = `${levelEmoji} ${t("levelSelect.level")} ${level}`;
 
   const handleActivatePowerup = (
@@ -382,15 +417,25 @@ export function GameBoardScreen({
   };
 
   const gridColsClass =
-    gridSize === 8
-      ? "grid-cols-8"
-      : gridSize === 7
-        ? "grid-cols-7"
-        : gridSize === 6
-          ? "grid-cols-6"
-          : "grid-cols-5";
+    gridSize === 10
+      ? "grid-cols-10"
+      : gridSize === 9
+        ? "grid-cols-9"
+        : gridSize === 8
+          ? "grid-cols-8"
+          : gridSize === 7
+            ? "grid-cols-7"
+            : gridSize === 6
+              ? "grid-cols-6"
+              : "grid-cols-5";
   const cellSizeClass =
-    gridSize >= 8 ? "rounded-md" : gridSize >= 7 ? "rounded-lg" : "rounded-2xl";
+    gridSize >= 9
+      ? "rounded-sm"
+      : gridSize >= 8
+        ? "rounded-md"
+        : gridSize >= 7
+          ? "rounded-lg"
+          : "rounded-2xl";
 
   const winEmoji =
     universe === "crystal"
@@ -399,7 +444,11 @@ export function GameBoardScreen({
         ? "🔥"
         : universe === "jungle"
           ? "🌿"
-          : "🎉";
+          : universe === "void"
+            ? "🌌"
+            : universe === "neon"
+              ? "⚡"
+              : "🎉";
 
   const loseEmoji =
     universe === "inferno" && isBoss
@@ -408,7 +457,11 @@ export function GameBoardScreen({
         ? "⛓️"
         : universe === "crystal" && isBoss
           ? "🧊"
-          : "💥";
+          : universe === "void" && isBoss
+            ? "🌑"
+            : universe === "neon" && isBoss
+              ? "💀"
+              : "💥";
   const loseTitle =
     universe === "inferno" && isBoss
       ? t("game.lose.burnedAlive")
@@ -416,7 +469,11 @@ export function GameBoardScreen({
         ? t("game.lose.chainReaction")
         : universe === "crystal" && isBoss
           ? t("game.lose.frozenSolid")
-          : t("game.lose.boom");
+          : universe === "void" && isBoss
+            ? t("game.lose.voidConsumed")
+            : universe === "neon" && isBoss
+              ? t("game.lose.virusSpread")
+              : t("game.lose.boom");
   const loseMsg =
     universe === "inferno" && isBoss
       ? t("game.lose.infernoMsg")
@@ -424,7 +481,11 @@ export function GameBoardScreen({
         ? t("game.lose.chainBombs")
         : universe === "crystal" && isBoss
           ? t("game.lose.frozenMsg")
-          : t("game.lose.hitBomb");
+          : universe === "void" && isBoss
+            ? t("game.lose.voidMsg")
+            : universe === "neon" && isBoss
+              ? t("game.lose.virusMsg")
+              : t("game.lose.hitBomb");
 
   // Universe-specific face-down tile class
   const faceDownClass = `cell-face-down-${universe}`;
@@ -468,6 +529,58 @@ export function GameBoardScreen({
       {burnTimeLeft !== null && (
         <BurnTimerBar timeLeft={burnTimeLeft} label={t("game.infernoTimer")} />
       )}
+
+      {/* Void Boss Darkening Countdown */}
+      {universe === "void" &&
+        isBoss &&
+        voidDarkenCountdown !== null &&
+        phase === "playing" && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-2 px-4 py-2 rounded-2xl border flex items-center justify-between"
+            style={{
+              background: "oklch(0.14 0.10 290 / 0.8)",
+              borderColor: "oklch(0.40 0.16 285)",
+            }}
+          >
+            <span
+              className="text-xs font-display font-bold"
+              style={{ color: "oklch(0.78 0.18 285)" }}
+            >
+              🌑 {t("game.voidDarken")}
+            </span>
+            <span
+              className="font-display font-extrabold text-lg"
+              style={{ color: "oklch(0.82 0.20 285)" }}
+            >
+              {voidDarkenCountdown}s
+            </span>
+          </motion.div>
+        )}
+
+      {/* Neon Boss Virus Notification */}
+      <AnimatePresence>
+        {universe === "neon" && isBoss && showVirusNotification && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="mb-2 px-4 py-2 rounded-2xl border text-center"
+            style={{
+              background: "oklch(0.16 0.14 155 / 0.9)",
+              borderColor: "oklch(0.55 0.26 155)",
+            }}
+          >
+            <span
+              className="font-display font-extrabold text-sm"
+              style={{ color: "oklch(0.82 0.26 155)" }}
+            >
+              ⚡ {t("game.virusSpread")}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Score HUD */}
       <div className="mb-3 bg-card/60 rounded-2xl px-4 py-3 border border-border">
@@ -555,6 +668,7 @@ export function GameBoardScreen({
           const isFrozen = cell.type === "frozen";
           const isDisguised = !cell.revealed && !!cell.disguisedAs;
           const isShaking = frozenTappedIndex === i;
+          const isDarkened = !cell.revealed && darkenedCells.has(i);
 
           return (
             <motion.button
@@ -586,9 +700,11 @@ export function GameBoardScreen({
                       : `cell-${cell.type}`
                     : isFrozen
                       ? "cell-frozen"
-                      : warning
-                        ? `${faceDownClass} cell-warning`
-                        : faceDownClass
+                      : isDarkened
+                        ? "cell-void-darkened"
+                        : warning
+                          ? `${faceDownClass} cell-warning`
+                          : faceDownClass
                 }`}
               style={getCellStyle(cell.revealed, cell.type)}
             >
@@ -650,7 +766,16 @@ export function GameBoardScreen({
                   </span>
                 </motion.div>
               )}
-              {!cell.revealed && !isFrozen && warning && (
+              {isDarkened && !cell.revealed && (
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center"
+                  animate={{ opacity: [0.6, 1, 0.6] }}
+                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                >
+                  <span className="text-lg">🌑</span>
+                </motion.div>
+              )}
+              {!cell.revealed && !isFrozen && !isDarkened && warning && (
                 <motion.div
                   className={`absolute inset-0 ${cellSizeClass}`}
                   animate={{ opacity: [0.3, 0.7, 0.3] }}
@@ -778,7 +903,7 @@ export function GameBoardScreen({
                   </div>
                 )}
                 <div className="flex flex-col gap-2">
-                  {level < 11 && (
+                  {level < 21 && (
                     <Button
                       data-ocid="game_over.next_button"
                       onClick={() =>

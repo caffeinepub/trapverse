@@ -7,6 +7,8 @@ import {
   LEVEL_TARGETS_CRYSTAL,
   LEVEL_TARGETS_INFERNO,
   LEVEL_TARGETS_JUNGLE,
+  LEVEL_TARGETS_NEON,
+  LEVEL_TARGETS_VOID,
   type LevelStar,
   type Universe,
 } from "../types";
@@ -34,7 +36,11 @@ function StarRow({ stars, universe }: { stars: number; universe: Universe }) {
                     ? "fill-crystal-gold text-crystal-gold"
                     : universe === "inferno"
                       ? "fill-inferno-gold text-inferno-gold"
-                      : "star-filled fill-candy-gold"
+                      : universe === "void"
+                        ? "fill-[oklch(0.82_0.16_285)] text-[oklch(0.82_0.16_285)]"
+                        : universe === "neon"
+                          ? "fill-[oklch(0.82_0.22_155)] text-[oklch(0.82_0.22_155)]"
+                          : "star-filled fill-candy-gold"
                 : "star-empty"
             }`}
           />
@@ -121,6 +127,44 @@ const UNIVERSE_CONFIG = {
     borderLocked: "oklch(0.25 0.06 20)",
     titleIcon: "🔥",
   },
+  void: {
+    bg: "void-bg",
+    levelIcon: "🌑",
+    bossIcon: "🌀",
+    completedIcon: "✨",
+    lockedIcon: "🔒",
+    cellNormal:
+      "linear-gradient(135deg, oklch(0.16 0.10 290), oklch(0.12 0.08 305))",
+    cellCompleted:
+      "linear-gradient(135deg, oklch(0.22 0.14 288), oklch(0.16 0.10 300))",
+    cellBoss:
+      "linear-gradient(135deg, oklch(0.26 0.18 285), oklch(0.18 0.14 300))",
+    cellLocked: "oklch(0.12 0.05 295)",
+    borderNormal: "oklch(0.32 0.12 288)",
+    borderCompleted: "oklch(0.48 0.16 285)",
+    borderBoss: "oklch(0.58 0.22 282)",
+    borderLocked: "oklch(0.20 0.06 292)",
+    titleIcon: "🌑",
+  },
+  neon: {
+    bg: "neon-bg",
+    levelIcon: "⚡",
+    bossIcon: "🧬",
+    completedIcon: "✅",
+    lockedIcon: "🔒",
+    cellNormal:
+      "linear-gradient(135deg, oklch(0.14 0.08 160), oklch(0.10 0.06 175))",
+    cellCompleted:
+      "linear-gradient(135deg, oklch(0.20 0.14 158), oklch(0.14 0.10 170))",
+    cellBoss:
+      "linear-gradient(135deg, oklch(0.22 0.18 155), oklch(0.16 0.14 168))",
+    cellLocked: "oklch(0.10 0.04 165)",
+    borderNormal: "oklch(0.38 0.18 158)",
+    borderCompleted: "oklch(0.52 0.22 155)",
+    borderBoss: "oklch(0.65 0.26 152)",
+    borderLocked: "oklch(0.22 0.08 162)",
+    titleIcon: "⚡",
+  },
 };
 
 function getTargets(universe: Universe) {
@@ -131,6 +175,10 @@ function getTargets(universe: Universe) {
       return LEVEL_TARGETS_CRYSTAL;
     case "inferno":
       return LEVEL_TARGETS_INFERNO;
+    case "void":
+      return LEVEL_TARGETS_VOID;
+    case "neon":
+      return LEVEL_TARGETS_NEON;
     default:
       return LEVEL_TARGETS;
   }
@@ -174,7 +222,11 @@ export function LevelSelectScreen({
         ? "crystal-boss-glow"
         : universe === "inferno"
           ? "inferno-boss-glow"
-          : "boss-glow";
+          : universe === "void"
+            ? "void-boss-glow"
+            : universe === "neon"
+              ? "neon-boss-glow"
+              : "boss-glow";
 
   return (
     <motion.div
@@ -214,9 +266,9 @@ export function LevelSelectScreen({
 
       {/* Level grid */}
       <div className="grid grid-cols-3 gap-3 flex-1">
-        {Array.from({ length: 11 }, (_, i) => {
+        {Array.from({ length: 21 }, (_, i) => {
           const level = i + 1;
-          const isBoss = level === 11;
+          const isBoss = level === 21;
           const progress = levelStars[i] ?? { stars: 0, completed: false };
           const prevCompleted =
             i === 0 || (levelStars[i - 1]?.completed ?? false);

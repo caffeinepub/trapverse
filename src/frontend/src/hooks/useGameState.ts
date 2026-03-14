@@ -8,6 +8,8 @@ import {
   LEVEL_TARGETS_CRYSTAL,
   LEVEL_TARGETS_INFERNO,
   LEVEL_TARGETS_JUNGLE,
+  LEVEL_TARGETS_NEON,
+  LEVEL_TARGETS_VOID,
   UNIVERSE_GRID_SIZE,
   type Universe,
 } from "../types";
@@ -56,7 +58,7 @@ const DISGUISE_POOL: CellType[] = ["gold", "diamond", "silver", "gold", "gold"];
 function generateGrid(level: number, universe: Universe): Cell[] {
   const gridSize = UNIVERSE_GRID_SIZE[universe];
   const totalCells = gridSize * gridSize;
-  const isBoss = level === 11;
+  const isBoss = level === 21;
 
   let bombCount: number;
   let chainBombCount = 0;
@@ -76,6 +78,10 @@ function generateGrid(level: number, universe: Universe): Cell[] {
     }
   } else if (universe === "inferno") {
     bombCount = Math.round(totalCells * 0.3);
+  } else if (universe === "void") {
+    bombCount = Math.round(totalCells * 0.35);
+  } else if (universe === "neon") {
+    bombCount = Math.round(totalCells * 0.4);
   } else {
     // candy
     if (isBoss) {
@@ -170,6 +176,10 @@ function getTargets(universe: Universe) {
       return LEVEL_TARGETS_CRYSTAL;
     case "inferno":
       return LEVEL_TARGETS_INFERNO;
+    case "void":
+      return LEVEL_TARGETS_VOID;
+    case "neon":
+      return LEVEL_TARGETS_NEON;
     default:
       return LEVEL_TARGETS;
   }
@@ -180,8 +190,9 @@ export function useGameState(
   universe: Universe = "candy",
   isPaused = false,
 ) {
-  const isBoss = level === 11;
+  const isBoss = level === 21;
   const isInfernoBoss = universe === "inferno" && isBoss;
+  const isVoidBoss = universe === "void" && isBoss;
   const gridSize = UNIVERSE_GRID_SIZE[universe];
   const targets = getTargets(universe);
   const target = targets[level - 1] ?? 300;
@@ -206,6 +217,16 @@ export function useGameState(
     if (save && save.burnTimeLeft !== null) return save.burnTimeLeft;
     return isInfernoBoss ? 40 : null;
   });
+  // Void boss: darkened cells (indices)
+  const [darkenedCells, setDarkenedCells] = useState<Set<number>>(
+    () => new Set(),
+  );
+  // Void boss: countdown to next darkening
+  const [voidDarkenCountdown, setVoidDarkenCountdown] = useState<number | null>(
+    isVoidBoss ? 15 : null,
+  );
+  // Neon boss: virus notification
+  const [showVirusNotification, setShowVirusNotification] = useState(false);
   // Track last frozen cell tapped for shake feedback
   const [frozenTappedIndex, setFrozenTappedIndex] = useState<number | null>(
     null,
@@ -213,6 +234,7 @@ export function useGameState(
   const burnTickRef = useRef(0);
   const phaseRef = useRef<GamePhase>("playing");
   const prevBurnTimeRef = useRef<number | null>(isInfernoBoss ? 40 : null);
+  const voidTickRef = useRef(0);
 
   const safeSetPhase = useCallback((newPhase: GamePhase) => {
     if (phaseRef.current === "playing") {
@@ -248,14 +270,17 @@ export function useGameState(
     } else {
       setGrid(generateGrid(level, universe));
       setScore(0);
-      setBurnTimeLeft(universe === "inferno" && level === 11 ? 40 : null);
+      setBurnTimeLeft(universe === "inferno" && level === 21 ? 40 : null);
     }
     phaseRef.current = "playing";
     setPhase("playing");
     setActivePowerups({ detector: false, multiplier: false, shield: false });
+    setDarkenedCells(new Set());
+    setVoidDarkenCountdown(universe === "void" && level === 21 ? 15 : null);
     prevBurnTimeRef.current =
-      universe === "inferno" && level === 11 ? 40 : null;
+      universe === "inferno" && level === 21 ? 40 : null;
     burnTickRef.current = 0;
+    voidTickRef.current = 0;
   }, [level, universe]);
 
   // Inferno boss burn timer — stops when paused
@@ -305,6 +330,47 @@ export function useGameState(
     return () => clearInterval(interval);
   }, [isInfernoBoss, phase, safeSetPhase, isPaused]);
 
+  // Void boss darkening timer — stops when paused
+  useEffect(() => {
+    if (!isVoidBoss) return;
+    if (phase !== "playing") return;
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      setVoidDarkenCountdown((prev) => {
+        if (prev === null) return null;
+        const next = prev - 1;
+        if (next <= 0) {
+          // Darken a random unrevealed safe cell
+          setGrid((currentGrid) => {
+            setDarkenedCells((currentDarkened) => {
+              const candidates = currentGrid
+                .map((c, i) => ({ c, i }))
+                .filter(
+                  ({ c, i }) =>
+                    !c.revealed &&
+                    c.type !== "bomb" &&
+                    c.type !== "chain_bomb" &&
+                    !currentDarkened.has(i),
+                );
+              if (candidates.length === 0) return currentDarkened;
+              const pick =
+                candidates[Math.floor(Math.random() * candidates.length)];
+              const newDarkened = new Set(currentDarkened);
+              newDarkened.add(pick.i);
+              return newDarkened;
+            });
+            return currentGrid;
+          });
+          return 15; // reset countdown
+        }
+        return next;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isVoidBoss, phase, isPaused]);
+
   const resetGame = useCallback(() => {
     clearSave();
     setGrid(generateGrid(level, universe));
@@ -312,10 +378,13 @@ export function useGameState(
     phaseRef.current = "playing";
     setPhase("playing");
     setActivePowerups({ detector: false, multiplier: false, shield: false });
-    setBurnTimeLeft(universe === "inferno" && level === 11 ? 40 : null);
+    setBurnTimeLeft(universe === "inferno" && level === 21 ? 40 : null);
+    setDarkenedCells(new Set());
+    setVoidDarkenCountdown(universe === "void" && level === 21 ? 15 : null);
     prevBurnTimeRef.current =
-      universe === "inferno" && level === 11 ? 40 : null;
+      universe === "inferno" && level === 21 ? 40 : null;
     burnTickRef.current = 0;
+    voidTickRef.current = 0;
   }, [level, universe]);
 
   const triggerChainReaction = useCallback(
@@ -357,6 +426,46 @@ export function useGameState(
           ? { ...c, revealed: true }
           : c,
       );
+    },
+    [gridSize],
+  );
+
+  // Neon boss: virus spread — when bomb explodes, all adjacent unrevealed cells also explode (BFS)
+  const triggerVirusSpread = useCallback(
+    (startIndex: number, currentGrid: Cell[]): Cell[] => {
+      const newGrid = [...currentGrid];
+      const visited = new Set<number>();
+      const queue = [startIndex];
+
+      while (queue.length > 0) {
+        const idx = queue.shift()!;
+        if (visited.has(idx)) continue;
+        visited.add(idx);
+        newGrid[idx] = { ...newGrid[idx], revealed: true };
+
+        // If it's a bomb (or chain_bomb), spread to all adjacent unrevealed cells
+        if (
+          newGrid[idx].type === "bomb" ||
+          newGrid[idx].type === "chain_bomb"
+        ) {
+          const row = Math.floor(idx / gridSize);
+          const col = idx % gridSize;
+          for (let dr = -1; dr <= 1; dr++) {
+            for (let dc = -1; dc <= 1; dc++) {
+              if (dr === 0 && dc === 0) continue;
+              const nr = row + dr;
+              const nc = col + dc;
+              if (nr >= 0 && nr < gridSize && nc >= 0 && nc < gridSize) {
+                const nIdx = nr * gridSize + nc;
+                if (!visited.has(nIdx) && !newGrid[nIdx].revealed) {
+                  queue.push(nIdx);
+                }
+              }
+            }
+          }
+        }
+      }
+      return newGrid;
     },
     [gridSize],
   );
@@ -405,13 +514,20 @@ export function useGameState(
         } else {
           playSound("bomb");
           Haptics.explosion();
-          setGrid((prev) =>
-            prev.map((c, i) =>
-              i === index || c.type === "bomb" || c.type === "chain_bomb"
-                ? { ...c, revealed: true }
-                : c,
-            ),
-          );
+          // Neon boss: virus spread
+          if (universe === "neon" && isBoss) {
+            setShowVirusNotification(true);
+            setTimeout(() => setShowVirusNotification(false), 1800);
+            setGrid((prev) => triggerVirusSpread(index, prev));
+          } else {
+            setGrid((prev) =>
+              prev.map((c, i) =>
+                i === index || c.type === "bomb" || c.type === "chain_bomb"
+                  ? { ...c, revealed: true }
+                  : c,
+              ),
+            );
+          }
           safeSetPhase("lost");
         }
       } else {
@@ -438,7 +554,16 @@ export function useGameState(
         });
       }
     },
-    [grid, activePowerups, target, isBoss, triggerChainReaction, safeSetPhase],
+    [
+      grid,
+      activePowerups,
+      target,
+      isBoss,
+      universe,
+      triggerChainReaction,
+      triggerVirusSpread,
+      safeSetPhase,
+    ],
   );
 
   const activatePowerup = useCallback(
@@ -480,6 +605,9 @@ export function useGameState(
     starsEarned,
     burnTimeLeft,
     frozenTappedIndex,
+    darkenedCells,
+    voidDarkenCountdown,
+    showVirusNotification,
     revealCell,
     activatePowerup,
     resetGame,

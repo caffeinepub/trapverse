@@ -39,6 +39,7 @@ function AppInner() {
     }
     return ["classic"];
   });
+  const [showManualReward, setShowManualReward] = useState(false);
   const [showTutorial, setShowTutorial] = useState(
     () => !localStorage.getItem("trapverse_tutorial_done"),
   );
@@ -55,6 +56,10 @@ function AppInner() {
     setCrystalLevelStars,
     infernoLevelStars,
     setInfernoLevelStars,
+    voidLevelStars,
+    setVoidLevelStars,
+    neonLevelStars,
+    setNeonLevelStars,
     powerups,
     setPowerups,
     quests,
@@ -89,6 +94,8 @@ function AppInner() {
         jungle: "Mystic Jungle",
         crystal: "Crystal Storm",
         inferno: "Solar Inferno",
+        void: "Void Abyss",
+        neon: "Neon Circuit",
       };
       (window as any).AndroidAudioBridge?.changeTheme(themeMap[universe]);
     } catch {
@@ -132,7 +139,7 @@ function AppInner() {
     powerupUsed = true,
   ) => {
     const levelIndex = currentLevel - 1;
-    const isBoss = currentLevel === 11;
+    const isBoss = currentLevel === 21;
     switch (currentUniverse) {
       case "candy":
         setLevelStars(levelIndex, stars, true);
@@ -145,6 +152,12 @@ function AppInner() {
         break;
       case "inferno":
         setInfernoLevelStars(levelIndex, stars, true);
+        break;
+      case "void":
+        setVoidLevelStars(levelIndex, stars, true);
+        break;
+      case "neon":
+        setNeonLevelStars(levelIndex, stars, true);
         break;
     }
     updateLevelMutation.mutate({ level: currentLevel, stars, completed: true });
@@ -191,30 +204,40 @@ function AppInner() {
     updateAchievementProgress("level_10", newTotalLevels);
     updateAchievementProgress("level_25", newTotalLevels);
     updateAchievementProgress("level_44", newTotalLevels);
+    updateAchievementProgress("level_66", newTotalLevels);
     updateAchievementProgress("coin_100", newTotalCoins);
     updateAchievementProgress("coin_500", newTotalCoins);
     updateAchievementProgress("coin_1000", newTotalCoins);
     updateAchievementProgress("star_10", newTotalStars);
     updateAchievementProgress("star_30", newTotalStars);
     updateAchievementProgress("boss_first", newBosses);
+
     // boss_all: count unique universe bosses beaten (not total)
     const candyBossDone =
-      levelStars[10]?.completed ||
+      levelStars[20]?.completed ||
       (currentUniverse === "candy" && isBoss && stars > 0);
     const jungleBossDone =
-      jungleLevelStars[10]?.completed ||
+      jungleLevelStars[20]?.completed ||
       (currentUniverse === "jungle" && isBoss && stars > 0);
     const crystalBossDone =
-      crystalLevelStars[10]?.completed ||
+      crystalLevelStars[20]?.completed ||
       (currentUniverse === "crystal" && isBoss && stars > 0);
     const infernoBossDone =
-      infernoLevelStars[10]?.completed ||
+      infernoLevelStars[20]?.completed ||
       (currentUniverse === "inferno" && isBoss && stars > 0);
+    const voidBossDone =
+      voidLevelStars[20]?.completed ||
+      (currentUniverse === "void" && isBoss && stars > 0);
+    const neonBossDone =
+      neonLevelStars[20]?.completed ||
+      (currentUniverse === "neon" && isBoss && stars > 0);
     const uniqueBossCount = [
       candyBossDone,
       jungleBossDone,
       crystalBossDone,
       infernoBossDone,
+      voidBossDone,
+      neonBossDone,
     ].filter(Boolean).length;
     updateAchievementProgress("boss_all", uniqueBossCount);
     updateAchievementProgress("three_stars", newThreeStars);
@@ -226,15 +249,16 @@ function AppInner() {
       updateAchievementProgress("no_powerup", currentPuWins + 1);
     }
 
-    // all_universes: check if all 4 universe bosses beaten
+    // all_universes: check if all 6 universe bosses beaten
     const allBossesBeaten =
-      levelStars[10]?.completed &&
-      jungleLevelStars[10]?.completed &&
-      crystalLevelStars[10]?.completed &&
-      (infernoLevelStars[10]?.completed ||
-        (currentUniverse === "inferno" && isBoss && stars > 0));
+      candyBossDone &&
+      jungleBossDone &&
+      crystalBossDone &&
+      infernoBossDone &&
+      voidBossDone &&
+      neonBossDone;
     if (allBossesBeaten) {
-      updateAchievementProgress("all_universes", 4);
+      updateAchievementProgress("all_universes", 6);
     }
 
     if (currentLevel < 11) {
@@ -287,6 +311,7 @@ function AppInner() {
       }));
     }
     markLoginRewardSeen();
+    setShowManualReward(false);
   };
 
   const activeLevelStars = (() => {
@@ -297,6 +322,10 @@ function AppInner() {
         return crystalLevelStars;
       case "inferno":
         return infernoLevelStars;
+      case "void":
+        return voidLevelStars;
+      case "neon":
+        return neonLevelStars;
       default:
         return levelStars;
     }
@@ -332,9 +361,13 @@ function AppInner() {
                 onStats={() => setScreen("stats")}
                 onCollection={() => setScreen("collection")}
                 onSettings={() => setScreen("settings")}
+                onDailyReward={() => setShowManualReward(true)}
+                dailyRewardClaimed={!loginRewardInfo.shouldShow}
                 candyStars={levelStars}
                 jungleStars={jungleLevelStars}
                 crystalStars={crystalLevelStars}
+                infernoStars={infernoLevelStars}
+                voidStars={voidLevelStars}
               />
             </motion.div>
           )}
@@ -491,7 +524,7 @@ function AppInner() {
             <TutorialOverlay onClose={() => setShowTutorial(false)} />
           )}
         </AnimatePresence>
-        {!showTutorial && loginRewardInfo.shouldShow && (
+        {!showTutorial && (loginRewardInfo.shouldShow || showManualReward) && (
           <LoginRewardPopup
             info={loginRewardInfo}
             onClaim={handleClaimLoginReward}

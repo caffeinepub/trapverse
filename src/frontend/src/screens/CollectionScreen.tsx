@@ -310,18 +310,6 @@ export function CollectionScreen({
           );
         })}
       </div>
-
-      <p className="text-muted-foreground/50 text-xs mt-8 text-center">
-        © {new Date().getFullYear()}.{" "}
-        <a
-          href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
-          className="hover:text-muted-foreground transition-colors"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Built with ♥ using caffeine.ai
-        </a>
-      </p>
     </motion.div>
   );
 }

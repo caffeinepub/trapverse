@@ -15,12 +15,32 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
     return localStorage.getItem("trapverse_vibration_enabled") !== "false";
   });
 
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
+    return localStorage.getItem("trapverse_sound_enabled") !== "false";
+  });
+
   useEffect(() => {
     localStorage.setItem(
       "trapverse_vibration_enabled",
       vibrationEnabled ? "true" : "false",
     );
   }, [vibrationEnabled]);
+
+  const handleSoundToggle = (enabled: boolean) => {
+    setSoundEnabled(enabled);
+    localStorage.setItem("trapverse_sound_enabled", enabled ? "true" : "false");
+    try {
+      if (enabled) {
+        (window as any).AndroidAudioBridge?.setVolume?.(1.0);
+        (window as any).AndroidAudioBridge?.setSoundEnabled?.(true);
+      } else {
+        (window as any).AndroidAudioBridge?.setVolume?.(0.0);
+        (window as any).AndroidAudioBridge?.setSoundEnabled?.(false);
+      }
+    } catch {
+      /* ignore */
+    }
+  };
 
   return (
     <motion.div
@@ -55,29 +75,28 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
             <p className="text-xs text-muted-foreground mt-0.5">📳</p>
           </div>
           <Switch
-            data-ocid="settings.switch"
+            data-ocid="settings.vibration.switch"
             checked={vibrationEnabled}
             onCheckedChange={setVibrationEnabled}
           />
         </div>
       </div>
 
-      {/* Sound (placeholder) */}
-      <div className="bg-card/60 rounded-2xl border border-border p-5 opacity-60">
+      {/* Sound */}
+      <div className="bg-card/60 rounded-2xl border border-border p-5">
         <div className="flex items-center justify-between">
           <div>
             <p className="font-semibold text-foreground">
               {t("settings.sound")}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              🔇 {t("settings.sound.comingSoon")}
+              {soundEnabled ? "🔊" : "🔇"}
             </p>
           </div>
           <Switch
-            data-ocid="settings.toggle"
-            checked={false}
-            disabled
-            onCheckedChange={() => {}}
+            data-ocid="settings.sound.switch"
+            checked={soundEnabled}
+            onCheckedChange={handleSoundToggle}
           />
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import {
   Coins,
+  Gift,
   Globe,
   HelpCircle,
   Settings,
@@ -24,9 +25,13 @@ interface HomeScreenProps {
   onAchievements: () => void;
   onStats: () => void;
   onCollection: () => void;
+  onDailyReward: () => void;
+  dailyRewardClaimed: boolean;
   candyStars: LevelStar[];
   jungleStars: LevelStar[];
   crystalStars: LevelStar[];
+  infernoStars: LevelStar[];
+  voidStars: LevelStar[];
 }
 
 const particles = [
@@ -153,16 +158,22 @@ export function HomeScreen({
   onAchievements,
   onStats,
   onCollection,
+  onDailyReward,
+  dailyRewardClaimed,
   candyStars,
   jungleStars,
   crystalStars,
+  infernoStars,
+  voidStars,
 }: HomeScreenProps) {
   const { t, lang, setLang, languages } = useLanguage();
   const [showLangModal, setShowLangModal] = useState(false);
 
-  const jungleUnlocked = candyStars[10]?.completed === true;
-  const crystalUnlocked = jungleStars[10]?.completed === true;
-  const infernoUnlocked = crystalStars[10]?.completed === true;
+  const jungleUnlocked = candyStars[20]?.completed === true;
+  const crystalUnlocked = jungleStars[20]?.completed === true;
+  const infernoUnlocked = crystalStars[20]?.completed === true;
+  const voidUnlocked = infernoStars[20]?.completed === true;
+  const neonUnlocked = voidStars[20]?.completed === true;
 
   const lockedLabel = t("home.locked");
 
@@ -548,6 +559,169 @@ export function HomeScreen({
               )}
             </div>
           </motion.button>
+
+          {/* Void Abyss */}
+          <motion.button
+            type="button"
+            data-ocid="home.void_button"
+            className={`w-full relative rounded-3xl p-5 overflow-hidden text-left transition-opacity ${voidUnlocked ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
+            style={{
+              background:
+                "linear-gradient(135deg, oklch(0.14 0.10 290) 0%, oklch(0.10 0.08 310) 100%)",
+              border: "1.5px solid oklch(0.35 0.14 285)",
+            }}
+            onClick={() => {
+              if (voidUnlocked) onSelectUniverse("void");
+            }}
+            whileHover={voidUnlocked ? { scale: 1.01 } : {}}
+            whileTap={voidUnlocked ? { scale: 0.97 } : {}}
+          >
+            {!voidUnlocked && <LockOverlay label={lockedLabel} />}
+            <div
+              className="absolute inset-0 opacity-30"
+              style={{
+                background:
+                  "radial-gradient(ellipse at 80% 30%, oklch(0.55 0.22 290) 0%, transparent 55%), radial-gradient(ellipse at 20% 80%, oklch(0.35 0.16 300) 0%, transparent 40%)",
+              }}
+            />
+            {/* Star field effect */}
+            <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+              {["s1", "s2", "s3", "s4", "s5", "s6"].map((sid, si) => (
+                <motion.div
+                  key={sid}
+                  className="absolute rounded-full"
+                  style={{
+                    width: si % 2 === 0 ? 2 : 3,
+                    height: si % 2 === 0 ? 2 : 3,
+                    background: "oklch(0.90 0.05 290)",
+                    top: `${10 + si * 14}%`,
+                    right: `${5 + (si % 3) * 10}%`,
+                  }}
+                  animate={{ opacity: [0.3, 1, 0.3] }}
+                  transition={{
+                    duration: 1.5 + si * 0.5,
+                    repeat: Number.POSITIVE_INFINITY,
+                    delay: si * 0.3,
+                  }}
+                />
+              ))}
+            </div>
+            <CardShimmer delay={4} />
+            <div className="relative flex items-center gap-4">
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+                style={{
+                  background:
+                    "linear-gradient(135deg, oklch(0.30 0.18 290), oklch(0.20 0.14 310))",
+                }}
+              >
+                🌑
+              </div>
+              <div className="flex-1">
+                <h2
+                  className="font-display font-bold text-lg"
+                  style={{ color: "oklch(0.82 0.16 285)" }}
+                >
+                  {t("home.universe.void.name")}
+                </h2>
+                <p
+                  className="text-xs"
+                  style={{ color: "oklch(0.52 0.10 290)" }}
+                >
+                  {t("home.universe.void.desc")}
+                </p>
+              </div>
+              {voidUnlocked && (
+                <motion.div
+                  className="text-xl"
+                  style={{ color: "oklch(0.65 0.16 285)" }}
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Number.POSITIVE_INFINITY,
+                    delay: 1.2,
+                  }}
+                >
+                  →
+                </motion.div>
+              )}
+            </div>
+          </motion.button>
+
+          {/* Neon Circuit */}
+          <motion.button
+            type="button"
+            data-ocid="home.neon_button"
+            className={`w-full relative rounded-3xl p-5 overflow-hidden text-left transition-opacity ${neonUnlocked ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
+            style={{
+              background:
+                "linear-gradient(135deg, oklch(0.12 0.08 160) 0%, oklch(0.10 0.06 200) 100%)",
+              border: "1.5px solid oklch(0.55 0.20 155)",
+            }}
+            onClick={() => {
+              if (neonUnlocked) onSelectUniverse("neon");
+            }}
+            whileHover={neonUnlocked ? { scale: 1.01 } : {}}
+            whileTap={neonUnlocked ? { scale: 0.97 } : {}}
+          >
+            {!neonUnlocked && <LockOverlay label={lockedLabel} />}
+            <div
+              className="absolute inset-0 opacity-25"
+              style={{
+                background:
+                  "radial-gradient(ellipse at 20% 50%, oklch(0.62 0.28 155) 0%, transparent 50%), radial-gradient(ellipse at 80% 30%, oklch(0.55 0.26 330) 0%, transparent 45%)",
+              }}
+            />
+            {/* Circuit lines effect */}
+            <div
+              className="absolute inset-0 opacity-10 pointer-events-none"
+              style={{
+                backgroundImage:
+                  "repeating-linear-gradient(0deg, oklch(0.62 0.28 155) 0px, oklch(0.62 0.28 155) 1px, transparent 1px, transparent 20px), repeating-linear-gradient(90deg, oklch(0.62 0.28 155) 0px, oklch(0.62 0.28 155) 1px, transparent 1px, transparent 20px)",
+              }}
+            />
+            <CardShimmer delay={5} />
+            <div className="relative flex items-center gap-4">
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+                style={{
+                  background:
+                    "linear-gradient(135deg, oklch(0.38 0.24 155), oklch(0.28 0.18 175))",
+                  boxShadow: "0 0 12px oklch(0.55 0.28 155 / 0.5)",
+                }}
+              >
+                ⚡
+              </div>
+              <div className="flex-1">
+                <h2
+                  className="font-display font-bold text-lg"
+                  style={{ color: "oklch(0.82 0.22 155)" }}
+                >
+                  {t("home.universe.neon.name")}
+                </h2>
+                <p
+                  className="text-xs"
+                  style={{ color: "oklch(0.52 0.14 160)" }}
+                >
+                  {t("home.universe.neon.desc")}
+                </p>
+              </div>
+              {neonUnlocked && (
+                <motion.div
+                  className="text-xl"
+                  style={{ color: "oklch(0.70 0.24 155)" }}
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Number.POSITIVE_INFINITY,
+                    delay: 1.5,
+                  }}
+                >
+                  →
+                </motion.div>
+              )}
+            </div>
+          </motion.button>
         </motion.div>
       </div>
 
@@ -558,6 +732,102 @@ export function HomeScreen({
         transition={{ delay: 0.6, type: "spring" }}
         className="w-full max-w-sm flex flex-col gap-3"
       >
+        {/* Daily Reward Button */}
+        <motion.button
+          type="button"
+          data-ocid="home.daily_reward_button"
+          whileTap={{ scale: 0.97 }}
+          onClick={onDailyReward}
+          className="w-full relative rounded-2xl overflow-hidden flex items-center gap-3 px-4"
+          style={{
+            background: dailyRewardClaimed
+              ? "oklch(0.16 0.05 280)"
+              : "linear-gradient(135deg, oklch(0.52 0.20 75), oklch(0.42 0.16 55))",
+            border: dailyRewardClaimed
+              ? "1.5px solid oklch(0.28 0.06 280)"
+              : "1.5px solid oklch(0.68 0.22 75)",
+            minHeight: 52,
+          }}
+        >
+          {!dailyRewardClaimed && (
+            <motion.div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  "linear-gradient(105deg, transparent 30%, oklch(1 0 0 / 0.10) 50%, transparent 70%)",
+              }}
+              animate={{ x: ["-100%", "200%"] }}
+              transition={{
+                duration: 1.5,
+                repeat: Number.POSITIVE_INFINITY,
+                repeatDelay: 2,
+                ease: "easeInOut",
+              }}
+            />
+          )}
+          <div
+            className="relative w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{
+              background: dailyRewardClaimed
+                ? "oklch(0.22 0.06 280)"
+                : "oklch(0.62 0.24 75 / 0.4)",
+            }}
+          >
+            <Gift
+              className="w-5 h-5"
+              style={{
+                color: dailyRewardClaimed
+                  ? "oklch(0.48 0.06 280)"
+                  : "oklch(0.98 0.06 75)",
+              }}
+            />
+          </div>
+          <div className="relative flex-1 text-left">
+            <p
+              className="font-display font-bold text-sm"
+              style={{
+                color: dailyRewardClaimed
+                  ? "oklch(0.50 0.05 280)"
+                  : "oklch(0.98 0.05 75)",
+              }}
+            >
+              {t("loginReward.title")}
+            </p>
+            <p
+              className="text-xs"
+              style={{
+                color: dailyRewardClaimed
+                  ? "oklch(0.38 0.04 280)"
+                  : "oklch(0.85 0.10 75)",
+              }}
+            >
+              {dailyRewardClaimed
+                ? t("loginReward.claimed")
+                : t("loginReward.available")}
+            </p>
+          </div>
+          {!dailyRewardClaimed && (
+            <motion.div
+              className="relative text-lg"
+              animate={{ scale: [1, 1.3, 1] }}
+              transition={{ duration: 1.2, repeat: Number.POSITIVE_INFINITY }}
+            >
+              🎁
+            </motion.div>
+          )}
+          {dailyRewardClaimed && (
+            <span
+              className="relative text-xs font-semibold px-2 py-1 rounded-lg"
+              style={{
+                background: "oklch(0.22 0.06 280)",
+                color: "oklch(0.42 0.05 280)",
+              }}
+            >
+              ✓
+            </span>
+          )}
+        </motion.button>
+
         <Button
           data-ocid="home.shop_button"
           size="lg"
@@ -625,18 +895,6 @@ export function HomeScreen({
           </motion.button>
         </div>
       </motion.div>
-
-      <p className="text-muted-foreground/50 text-xs mt-6 text-center">
-        © {new Date().getFullYear()}.{" "}
-        <a
-          href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
-          className="hover:text-muted-foreground transition-colors"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Built with ♥ using caffeine.ai
-        </a>
-      </p>
 
       {/* Language Selection Modal */}
       <AnimatePresence>

@@ -37,6 +37,30 @@ const steps = [
     titleKey: "tutorial.step5.title",
     descKey: "tutorial.step5.desc",
   },
+  {
+    id: "shadow",
+    emoji: "👁️",
+    titleKey: "tutorial.step6.title",
+    descKey: "tutorial.step6.desc",
+  },
+  {
+    id: "quantum",
+    emoji: "🧠",
+    titleKey: "tutorial.step7.title",
+    descKey: "tutorial.step7.desc",
+  },
+  {
+    id: "labyrinth",
+    emoji: "🔥",
+    titleKey: "tutorial.step8.title",
+    descKey: "tutorial.step8.desc",
+  },
+  {
+    id: "frozen",
+    emoji: "🧊",
+    titleKey: "tutorial.step9.title",
+    descKey: "tutorial.step9.desc",
+  },
 ];
 
 export function TutorialOverlay({ onClose }: TutorialOverlayProps) {
@@ -145,7 +169,7 @@ export function TutorialOverlay({ onClose }: TutorialOverlayProps) {
           </AnimatePresence>
 
           {/* Step dots */}
-          <div className="flex gap-2 mt-1">
+          <div className="flex gap-1.5 mt-1 flex-wrap justify-center">
             {steps.map((s, i) => (
               <motion.div
                 key={s.id}

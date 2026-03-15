@@ -145,6 +145,21 @@ export const translations: AllTranslations = {
     "tutorial.skip": "Skip",
     "tutorial.next": "Next",
     "tutorial.play": "Let's Play!",
+    "tutorial.step6.title": "Shadow Dimension: Limited Vision",
+    "tutorial.step6.desc":
+      "Only tiles near your last tap are visible. The rest of the board stays dark -- tap carefully and remember what you've seen!",
+    "tutorial.step7.title": "Quantum Realm: Memory Mode",
+    "tutorial.step7.desc":
+      "The board is revealed for 3 seconds at the start, then bomb counts are hidden. Memorize the layout before time runs out!",
+    "tutorial.step8.title": "Infernal Labyrinth: Blind Path",
+    "tutorial.step8.desc":
+      "Opening a safe tile randomly darkens some of its neighbors. Find a path through the darkness without hitting a bomb!",
+    "tutorial.step9.title": "Frozen Eternity: Double Tap",
+    "tutorial.step9.desc":
+      "All tiles start frozen. Tap once to melt, tap again to reveal. You also have a 60-second timer -- work fast!",
+    "howToPlay.basics": "Basics",
+    "howToPlay.specialMechanics": "Special Universe Mechanics",
+    "stats.universeBreakdown": "Universe Progress",
     "howToPlay.title": "How to Play",
     "howToPlay.back": "Back",
     "quest.title": "Quests",
@@ -360,6 +375,21 @@ export const translations: AllTranslations = {
     "tutorial.skip": "Atla",
     "tutorial.next": "İleri",
     "tutorial.play": "Haydi Oynayalım!",
+    "tutorial.step6.title": "Shadow Dimension: Sınırlı Görüş",
+    "tutorial.step6.desc":
+      "Sadece son tıkladığın karonun çevresini görebilirsin. Tahtanın geri kalanı karanlıkta kalır -- dikkatli tap ve gördüklerini hatırla!",
+    "tutorial.step7.title": "Quantum Realm: Hafıza Modu",
+    "tutorial.step7.desc":
+      "Tahta başlangıçta 3 saniye gösterilir, sonra bomba sayıları gizlenir. Süre dolmadan düzeni ezberle!",
+    "tutorial.step8.title": "Infernal Labyrinth: Kör Yol",
+    "tutorial.step8.desc":
+      "Güvenli bir karo açınca komşularından bazıları rastgele kararır. Bombalara çarpmadan karanlıktan geçen yolu bul!",
+    "tutorial.step9.title": "Frozen Eternity: Çift Dokunuş",
+    "tutorial.step9.desc":
+      "Tüm karolar donmuş başlar. Bir kez dokun eritir, tekrar dokun açar. 60 saniye sayacın da var -- hızlı hareket et!",
+    "howToPlay.basics": "Temel Bilgiler",
+    "howToPlay.specialMechanics": "Özel Evren Mekanikleri",
+    "stats.universeBreakdown": "Evren İlerlemesi",
     "howToPlay.title": "Nasıl Oynanır",
     "howToPlay.back": "Geri",
     "quest.title": "Görevler",
@@ -577,6 +607,21 @@ export const translations: AllTranslations = {
     "tutorial.skip": "Überspringen",
     "tutorial.next": "Weiter",
     "tutorial.play": "Los geht's!",
+    "tutorial.step6.title": "Shadow Dimension: Limited Vision",
+    "tutorial.step6.desc":
+      "Only tiles near your last tap are visible. The rest stays dark.",
+    "tutorial.step7.title": "Quantum Realm: Memory Mode",
+    "tutorial.step7.desc":
+      "The board is revealed for 3 seconds, then bomb counts are hidden.",
+    "tutorial.step8.title": "Infernal Labyrinth: Blind Path",
+    "tutorial.step8.desc":
+      "Opening a safe tile randomly darkens neighbors. Find your way!",
+    "tutorial.step9.title": "Frozen Eternity: Double Tap",
+    "tutorial.step9.desc":
+      "Tiles start frozen. Tap once to melt, again to reveal. 60-second timer.",
+    "howToPlay.basics": "Basics",
+    "howToPlay.specialMechanics": "Special Universe Mechanics",
+    "stats.universeBreakdown": "Universe Progress",
     "howToPlay.title": "Spielanleitung",
     "howToPlay.back": "Zurück",
     "quest.title": "Quests",
@@ -795,6 +840,21 @@ export const translations: AllTranslations = {
     "tutorial.skip": "Passer",
     "tutorial.next": "Suivant",
     "tutorial.play": "À nous jouer !",
+    "tutorial.step6.title": "Shadow Dimension: Limited Vision",
+    "tutorial.step6.desc":
+      "Only tiles near your last tap are visible. The rest stays dark.",
+    "tutorial.step7.title": "Quantum Realm: Memory Mode",
+    "tutorial.step7.desc":
+      "The board is revealed for 3 seconds, then bomb counts are hidden.",
+    "tutorial.step8.title": "Infernal Labyrinth: Blind Path",
+    "tutorial.step8.desc":
+      "Opening a safe tile randomly darkens neighbors. Find your way!",
+    "tutorial.step9.title": "Frozen Eternity: Double Tap",
+    "tutorial.step9.desc":
+      "Tiles start frozen. Tap once to melt, again to reveal. 60-second timer.",
+    "howToPlay.basics": "Basics",
+    "howToPlay.specialMechanics": "Special Universe Mechanics",
+    "stats.universeBreakdown": "Universe Progress",
     "howToPlay.title": "Comment Jouer",
     "howToPlay.back": "Retour",
     "quest.title": "Quêtes",
@@ -1013,6 +1073,21 @@ export const translations: AllTranslations = {
     "tutorial.skip": "Saltar",
     "tutorial.next": "Siguiente",
     "tutorial.play": "¡A Jugar!",
+    "tutorial.step6.title": "Shadow Dimension: Limited Vision",
+    "tutorial.step6.desc":
+      "Only tiles near your last tap are visible. The rest stays dark.",
+    "tutorial.step7.title": "Quantum Realm: Memory Mode",
+    "tutorial.step7.desc":
+      "The board is revealed for 3 seconds, then bomb counts are hidden.",
+    "tutorial.step8.title": "Infernal Labyrinth: Blind Path",
+    "tutorial.step8.desc":
+      "Opening a safe tile randomly darkens neighbors. Find your way!",
+    "tutorial.step9.title": "Frozen Eternity: Double Tap",
+    "tutorial.step9.desc":
+      "Tiles start frozen. Tap once to melt, again to reveal. 60-second timer.",
+    "howToPlay.basics": "Basics",
+    "howToPlay.specialMechanics": "Special Universe Mechanics",
+    "stats.universeBreakdown": "Universe Progress",
     "howToPlay.title": "Cómo Jugar",
     "howToPlay.back": "Atrás",
     "quest.title": "Misiones",
@@ -1231,6 +1306,21 @@ export const translations: AllTranslations = {
     "tutorial.skip": "Pular",
     "tutorial.next": "Próximo",
     "tutorial.play": "Vamos Jogar!",
+    "tutorial.step6.title": "Shadow Dimension: Limited Vision",
+    "tutorial.step6.desc":
+      "Only tiles near your last tap are visible. The rest stays dark.",
+    "tutorial.step7.title": "Quantum Realm: Memory Mode",
+    "tutorial.step7.desc":
+      "The board is revealed for 3 seconds, then bomb counts are hidden.",
+    "tutorial.step8.title": "Infernal Labyrinth: Blind Path",
+    "tutorial.step8.desc":
+      "Opening a safe tile randomly darkens neighbors. Find your way!",
+    "tutorial.step9.title": "Frozen Eternity: Double Tap",
+    "tutorial.step9.desc":
+      "Tiles start frozen. Tap once to melt, again to reveal. 60-second timer.",
+    "howToPlay.basics": "Basics",
+    "howToPlay.specialMechanics": "Special Universe Mechanics",
+    "stats.universeBreakdown": "Universe Progress",
     "howToPlay.title": "Como Jogar",
     "howToPlay.back": "Voltar",
     "quest.title": "Missões",
@@ -1447,6 +1537,21 @@ export const translations: AllTranslations = {
     "tutorial.skip": "تخطي",
     "tutorial.next": "التالي",
     "tutorial.play": "لنلعب!",
+    "tutorial.step6.title": "Shadow Dimension: Limited Vision",
+    "tutorial.step6.desc":
+      "Only tiles near your last tap are visible. The rest stays dark.",
+    "tutorial.step7.title": "Quantum Realm: Memory Mode",
+    "tutorial.step7.desc":
+      "The board is revealed for 3 seconds, then bomb counts are hidden.",
+    "tutorial.step8.title": "Infernal Labyrinth: Blind Path",
+    "tutorial.step8.desc":
+      "Opening a safe tile randomly darkens neighbors. Find your way!",
+    "tutorial.step9.title": "Frozen Eternity: Double Tap",
+    "tutorial.step9.desc":
+      "Tiles start frozen. Tap once to melt, again to reveal. 60-second timer.",
+    "howToPlay.basics": "Basics",
+    "howToPlay.specialMechanics": "Special Universe Mechanics",
+    "stats.universeBreakdown": "Universe Progress",
     "howToPlay.title": "كيف تلعب",
     "howToPlay.back": "رجوع",
     "quest.title": "مهام",
@@ -1664,6 +1769,21 @@ export const translations: AllTranslations = {
     "tutorial.skip": "Пропустить",
     "tutorial.next": "Далее",
     "tutorial.play": "Играть!",
+    "tutorial.step6.title": "Shadow Dimension: Limited Vision",
+    "tutorial.step6.desc":
+      "Only tiles near your last tap are visible. The rest stays dark.",
+    "tutorial.step7.title": "Quantum Realm: Memory Mode",
+    "tutorial.step7.desc":
+      "The board is revealed for 3 seconds, then bomb counts are hidden.",
+    "tutorial.step8.title": "Infernal Labyrinth: Blind Path",
+    "tutorial.step8.desc":
+      "Opening a safe tile randomly darkens neighbors. Find your way!",
+    "tutorial.step9.title": "Frozen Eternity: Double Tap",
+    "tutorial.step9.desc":
+      "Tiles start frozen. Tap once to melt, again to reveal. 60-second timer.",
+    "howToPlay.basics": "Basics",
+    "howToPlay.specialMechanics": "Special Universe Mechanics",
+    "stats.universeBreakdown": "Universe Progress",
     "howToPlay.title": "Как Играть",
     "howToPlay.back": "Назад",
     "quest.title": "Задания",
@@ -1881,6 +2001,21 @@ export const translations: AllTranslations = {
     "tutorial.skip": "スキップ",
     "tutorial.next": "次へ",
     "tutorial.play": "さあ遊ぼう！",
+    "tutorial.step6.title": "Shadow Dimension: Limited Vision",
+    "tutorial.step6.desc":
+      "Only tiles near your last tap are visible. The rest stays dark.",
+    "tutorial.step7.title": "Quantum Realm: Memory Mode",
+    "tutorial.step7.desc":
+      "The board is revealed for 3 seconds, then bomb counts are hidden.",
+    "tutorial.step8.title": "Infernal Labyrinth: Blind Path",
+    "tutorial.step8.desc":
+      "Opening a safe tile randomly darkens neighbors. Find your way!",
+    "tutorial.step9.title": "Frozen Eternity: Double Tap",
+    "tutorial.step9.desc":
+      "Tiles start frozen. Tap once to melt, again to reveal. 60-second timer.",
+    "howToPlay.basics": "Basics",
+    "howToPlay.specialMechanics": "Special Universe Mechanics",
+    "stats.universeBreakdown": "Universe Progress",
     "howToPlay.title": "遊び方",
     "howToPlay.back": "戻る",
     "quest.title": "クエスト",
@@ -2097,6 +2232,21 @@ export const translations: AllTranslations = {
     "tutorial.skip": "건너뛰기",
     "tutorial.next": "다음",
     "tutorial.play": "게임 시작!",
+    "tutorial.step6.title": "Shadow Dimension: Limited Vision",
+    "tutorial.step6.desc":
+      "Only tiles near your last tap are visible. The rest stays dark.",
+    "tutorial.step7.title": "Quantum Realm: Memory Mode",
+    "tutorial.step7.desc":
+      "The board is revealed for 3 seconds, then bomb counts are hidden.",
+    "tutorial.step8.title": "Infernal Labyrinth: Blind Path",
+    "tutorial.step8.desc":
+      "Opening a safe tile randomly darkens neighbors. Find your way!",
+    "tutorial.step9.title": "Frozen Eternity: Double Tap",
+    "tutorial.step9.desc":
+      "Tiles start frozen. Tap once to melt, again to reveal. 60-second timer.",
+    "howToPlay.basics": "Basics",
+    "howToPlay.specialMechanics": "Special Universe Mechanics",
+    "stats.universeBreakdown": "Universe Progress",
     "howToPlay.title": "게임 방법",
     "howToPlay.back": "뒤로",
     "quest.title": "퀘스트",

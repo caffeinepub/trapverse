@@ -289,21 +289,8 @@ function AppInner() {
       updateAchievementProgress("no_powerup", currentPuWins + 1);
     }
 
-    // all_universes: check if all 6 universe bosses beaten
-    const allBossesBeaten =
-      candyBossDone &&
-      jungleBossDone &&
-      crystalBossDone &&
-      infernoBossDone &&
-      voidBossDone &&
-      neonBossDone &&
-      shadowBossDone &&
-      quantumBossDone &&
-      labyrinthBossDone &&
-      frozenBossDone;
-    if (allBossesBeaten) {
-      updateAchievementProgress("all_universes", 10);
-    }
+    // all_universes: track progress across all 10 universe bosses
+    updateAchievementProgress("all_universes", uniqueBossCount);
 
     if (currentLevel < 21) {
       setCurrentLevel((prev) => prev + 1);
@@ -552,7 +539,22 @@ function AppInner() {
               exit="exit"
               transition={slideTransition}
             >
-              <StatsScreen stats={stats} onBack={handleBack} />
+              <StatsScreen
+                stats={stats}
+                onBack={handleBack}
+                universeStars={{
+                  candy: levelStars,
+                  jungle: jungleLevelStars,
+                  crystal: crystalLevelStars,
+                  inferno: infernoLevelStars,
+                  void: voidLevelStars,
+                  neon: neonLevelStars,
+                  shadow: shadowLevelStars,
+                  quantum: quantumLevelStars,
+                  labyrinth: labyrinthLevelStars,
+                  frozen: frozenLevelStars,
+                }}
+              />
             </motion.div>
           )}
           {screen === "collection" && (

@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { GlobalAudioToggle } from "./components/GlobalAudioToggle";
 import { LoginRewardPopup } from "./components/LoginRewardPopup";
 import { TutorialOverlay } from "./components/TutorialOverlay";
 import { LanguageProvider, useLanguage } from "./contexts/LanguageContext";
@@ -589,6 +590,7 @@ function AppInner() {
           />
         )}
       </div>
+      <GlobalAudioToggle />
       <Toaster position="top-center" />
     </div>
   );
